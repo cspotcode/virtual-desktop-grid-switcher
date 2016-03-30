@@ -1,25 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using GlobalHotkeyWithDotNET;
+using VDMHelperCLR.Common;
 using VirtualDesktopGridSwitcher.Settings;
 using WindowsDesktop;
 
 
 namespace VirtualDesktopGridSwitcher {
+
     class VirtualDesktopGridManager: IDisposable {
 
         private SettingValues settings;
         private SysTrayProcess sysTrayProcess;
 
+        private IVdmHelper VDMHelper;
+
         private Dictionary<VirtualDesktop, int> desktopIdLookup;
         private VirtualDesktop[] desktops;
 
-        public VirtualDesktopGridManager(SysTrayProcess sysTrayProcess, SettingValues settings) {
+        [DllImport("user32.dll")]
+        static extern IntPtr GetForegroundWindow();
+        
+        public VirtualDesktopGridManager(SysTrayProcess sysTrayProcess, SettingValues settings)
+        {
             this.settings = settings;
             this.sysTrayProcess = sysTrayProcess;
+
+            this.VDMHelper = VdmHelperFactory.CreateInstance();
+            this.VDMHelper.Init();
 
             Start();
         }
@@ -27,6 +40,8 @@ namespace VirtualDesktopGridSwitcher {
         public void Dispose()
         {
             Stop();
+
+            this.VDMHelper.Dispose();
         }
 
         private bool Start() {
@@ -202,66 +217,95 @@ namespace VirtualDesktopGridSwitcher {
             
             hotkeys = new List<Hotkey>();
 
-            Hotkey hkLeft = new Hotkey() {
-                Control = true,
-                Alt = true,
-                KeyCode = Keys.Left
-            };
-            hkLeft.Pressed += delegate {
-                this.SwitchLeft();
-            };
-            RegisterHotkey(hkLeft);
+            RegisterSwitchHotkey(Keys.Left, delegate { this.SwitchLeft(); });
+            RegisterSwitchHotkey(Keys.Right, delegate { this.SwitchLeft(); });
+            RegisterSwitchHotkey(Keys.Up, delegate { this.SwitchUp(); });
+            RegisterSwitchHotkey(Keys.Down, delegate { this.SwitchDown(); });
 
-            Hotkey hkRight = new Hotkey() {
-                Control = true,
-                Alt = true,
-                KeyCode = Keys.Right
-            };
-            hkRight.Pressed += delegate {
-                this.SwitchRight();
-            };
-            RegisterHotkey(hkRight);
-
-            Hotkey hkUp = new Hotkey() {
-                Control = true,
-                Alt = true,
-                KeyCode = Keys.Up
-            };
-            hkUp.Pressed += delegate {
-                this.SwitchUp();
-            };
-            RegisterHotkey(hkUp);
-
-            Hotkey hkDown = new Hotkey() {
-                Control = true,
-                Alt = true,
-                KeyCode = Keys.Down
-            };
-            hkDown.Pressed += delegate {
-                this.SwitchDown();
-            };
-            RegisterHotkey(hkDown);
+            RegisterMoveHotkey(
+                Keys.Left, 
+                delegate {
+                    var window = GetForegroundWindow();
+                    this.VDMHelper.MoveWindowToDesktop(window, desktops[Left].Id);
+                    SwitchLeft();
+                });
+            RegisterMoveHotkey(
+                Keys.Right, 
+                delegate {
+                    var window = GetForegroundWindow();
+                    this.VDMHelper.MoveWindowToDesktop(window, desktops[Left].Id);
+                    SwitchLeft();
+                });
+            RegisterMoveHotkey(
+                Keys.Up, 
+                delegate {
+                    var window = GetForegroundWindow();
+                    this.VDMHelper.MoveWindowToDesktop(window, desktops[Left].Id);
+                    SwitchLeft();
+                });
+            RegisterMoveHotkey(
+                Keys.Down, 
+                delegate {
+                    var window = GetForegroundWindow();
+                    this.VDMHelper.MoveWindowToDesktop(window, desktops[Left].Id);
+                    SwitchLeft();
+                });
 
             for (int keyNumber = 1; keyNumber <= Math.Min(DesktopCount, settings.FKeysForNumbers ?  12 : 9) ; ++keyNumber) {
-                Hotkey hkIndex = new Hotkey() {
-                    Control = true,
-                    Alt = true,
-                    KeyCode = (Keys)Enum.Parse(typeof(Keys), (settings.FKeysForNumbers ? "F" : "D") + keyNumber.ToString())
-                };
                 var desktopIndex = keyNumber - 1;
-                hkIndex.Pressed += delegate {
-                    this.Switch(desktopIndex);
-                };
-                RegisterHotkey(hkIndex);
+                Keys keycode =
+                    (Keys)Enum.Parse(typeof(Keys), (settings.FKeysForNumbers ? "F" : "D") + keyNumber.ToString());
+                
+                RegisterSwitchHotkey( keycode, delegate { this.Switch(desktopIndex); });
+
+                RegisterMoveHotkey(
+                    keycode,
+                    delegate {
+                        var window = GetForegroundWindow();
+                        this.VDMHelper.MoveWindowToDesktop(window, desktops[Left].Id);
+                        SwitchLeft();
+                    });
             }
 
         }
 
-        private void RegisterHotkey(Hotkey hkLeft) {
-            if (hkLeft.Register(null)) {
-                hotkeys.Add(hkLeft);
+        private void RegisterSwitchHotkey(Keys keycode, Action action) {
+            Hotkey hk = new Hotkey() {
+                Control = settings.CtrlModifier,
+                Windows = settings.WinModifier,
+                Alt = settings.AltModifier,
+                Shift = settings.ShiftModifier,
+                KeyCode = keycode
+            };
+            hk.Pressed += delegate { action(); };
+            if (hk.Register(null)) {
+                hotkeys.Add(hk);
             } else {
-                MessageBox.Show("Failed to register hotkey for " + hkLeft.KeyCode,
+                MessageBox.Show("Failed to register switch hotkey for " + hk.KeyCode,
+                                "Warning",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
+            }
+        }
+
+        private void RegisterMoveHotkey(Keys keycode, Action action)
+        {
+            Hotkey hk = new Hotkey()
+            {
+                Control = settings.CtrlModifier,
+                Windows = settings.WinModifier,
+                Alt = settings.AltModifier,
+                Shift = true,
+                KeyCode = keycode
+            };
+            hk.Pressed += delegate { action(); };
+            if (hk.Register(null))
+            {
+                hotkeys.Add(hk);
+            }
+            else
+            {
+                MessageBox.Show("Failed to register move window hotkey for " + hk.KeyCode,
                                 "Warning",
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Warning);
