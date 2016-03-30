@@ -1,0 +1,18 @@
+===>  3x3 Dark Red 3D icons for VirtuaWin  <===
+
+Author: George Lazarides
+E-mail: VirtualWin@george.findhere.org
+
+Description
+-----------
+Some icons for VirtuaWin . Designed to work with a
+3x3 virtual desktop setup.
+
+Install
+-------
+Copy these icon files to the icons directory where VirtuaWin
+is installed (default = C:\Program Files\VirtuaWin\icons\).
+
+License
+-------
+Same as VirtuaWin: GNU.
