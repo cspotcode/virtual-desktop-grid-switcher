@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Xml.Serialization;
 using System.Runtime.InteropServices;
 
-namespace MovablePython
+namespace GlobalHotkeyWithDotNET
 {
     public class Hotkey : IMessageFilter
 	{
@@ -114,7 +114,7 @@ namespace MovablePython
 							(this.Shift ? Hotkey.MOD_SHIFT : 0) | (this.Windows ? Hotkey.MOD_WIN : 0);
 
 			// Register the hotkey
-			if (Hotkey.RegisterHotKey(windowControl.Handle, this.id, modifiers, keyCode) == 0)
+			if (Hotkey.RegisterHotKey(windowControl != null ? windowControl.Handle : IntPtr.Zero, this.id, modifiers, keyCode) == 0)
 			{ 
 				// Is the error that the hotkey is registered?
 				if (Marshal.GetLastWin32Error() == ERROR_HOTKEY_ALREADY_REGISTERED)
@@ -138,10 +138,10 @@ namespace MovablePython
 			{ throw new NotSupportedException("You cannot unregister a hotkey that is not registered"); }
         
 			// It's possible that the control itself has died: in that case, no need to unregister!
-			if (!this.windowControl.IsDisposed)
+			if (this.windowControl == null || !this.windowControl.IsDisposed)
 			{
 				// Clean up after ourselves
-				if (Hotkey.UnregisterHotKey(this.windowControl.Handle, this.id) == 0)
+                if (Hotkey.UnregisterHotKey(windowControl != null ? windowControl.Handle : IntPtr.Zero, this.id) == 0)
 				{ throw new Win32Exception(); }
 			}
 
