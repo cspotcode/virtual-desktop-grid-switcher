@@ -1,2 +1,3 @@
 glob:bin/*
 glob:obj/*
+glob:VirtualDesktopGridSwitcher.v12.suo

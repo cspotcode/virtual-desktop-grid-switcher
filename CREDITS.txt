@@ -1,0 +1,17 @@
+Virtual Desktop Library
+-----------------------
+Modifed MIT Licensed code from
+https://github.com/Grabacr07/VirtualDesktop
+by Manato KAMEYA
+
+Global Hotkeys With .NET
+------------------------
+Modified Public Domain code found at
+https://bloggablea.wordpress.com/2007/05/01/global-hotkeys-with-net/
+by Max Bolingbroke
+
+Icons
+-----
+3x3 Dark Red 3D icons for VirtuaWin
+Author: George Lazarides
+E-mail: VirtualWin@george.findhere.org
