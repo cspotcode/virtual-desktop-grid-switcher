@@ -1,0 +1,5 @@
+VDMHelper Library
+-----------------
+Modifed MIT Licensed code from
+https://github.com/tmyt/VDMHelper
+by Yutaka Tsumori

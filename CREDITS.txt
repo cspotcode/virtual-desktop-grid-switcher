@@ -1,3 +1,9 @@
+VDMHelper Library
+-----------------
+Modifed MIT Licensed code from
+https://github.com/tmyt/VDMHelper
+by Yutaka Tsumori
+
 Virtual Desktop Library
 -----------------------
 Modifed MIT Licensed code from
