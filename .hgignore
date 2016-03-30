@@ -1,3 +1,6 @@
 glob:bin/*
 glob:obj/*
-glob:VirtualDesktopGridSwitcher.v12.suo
+glob:*.suo
+glob:*.vcxprojResolveAssemblyReference.cache
+glob:*.opensdf
+glob:*.sdf
