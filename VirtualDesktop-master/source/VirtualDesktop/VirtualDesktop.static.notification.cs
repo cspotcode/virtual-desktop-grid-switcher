@@ -53,36 +53,42 @@ namespace WindowsDesktop
 		{
 			void IVirtualDesktopNotification.VirtualDesktopCreated(IVirtualDesktop pDesktop)
 			{
-				Created?.Invoke(this, FromComObject(pDesktop));
+				if (Created != null) 
+                    Created.Invoke(this, FromComObject(pDesktop));
 			}
 
 			void IVirtualDesktopNotification.VirtualDesktopDestroyBegin(IVirtualDesktop pDesktopDestroyed, IVirtualDesktop pDesktopFallback)
 			{
 				var args = new VirtualDesktopDestroyEventArgs(FromComObject(pDesktopDestroyed), FromComObject(pDesktopFallback));
-				DestroyBegin?.Invoke(this, args);
+                if (DestroyBegin != null)
+				    DestroyBegin.Invoke(this, args);
 			}
 
 			void IVirtualDesktopNotification.VirtualDesktopDestroyFailed(IVirtualDesktop pDesktopDestroyed, IVirtualDesktop pDesktopFallback)
 			{
 				var args = new VirtualDesktopDestroyEventArgs(FromComObject(pDesktopDestroyed), FromComObject(pDesktopFallback));
-				DestroyFailed?.Invoke(this, args);
+                if (DestroyFailed != null)
+				    DestroyFailed.Invoke(this, args);
 			}
 
 			void IVirtualDesktopNotification.VirtualDesktopDestroyed(IVirtualDesktop pDesktopDestroyed, IVirtualDesktop pDesktopFallback)
 			{
 				var args = new VirtualDesktopDestroyEventArgs(FromComObject(pDesktopDestroyed), FromComObject(pDesktopFallback));
-				Destroyed?.Invoke(this, args);
+				if (Destroyed != null)
+                    Destroyed.Invoke(this, args);
 			}
 
 			void IVirtualDesktopNotification.ViewVirtualDesktopChanged(object pView)
 			{
-				ApplicationViewChanged?.Invoke(this, EventArgs.Empty);
+				if (ApplicationViewChanged != null)
+                    ApplicationViewChanged.Invoke(this, EventArgs.Empty);
 			}
 
 			void IVirtualDesktopNotification.CurrentVirtualDesktopChanged(IVirtualDesktop pDesktopOld, IVirtualDesktop pDesktopNew)
 			{
 				var args = new VirtualDesktopChangedEventArgs(FromComObject(pDesktopOld), FromComObject(pDesktopNew));
-				CurrentChanged?.Invoke(this, args);
+				if (CurrentChanged != null)
+                    CurrentChanged.Invoke(this, args);
 			}
 		}
 	}

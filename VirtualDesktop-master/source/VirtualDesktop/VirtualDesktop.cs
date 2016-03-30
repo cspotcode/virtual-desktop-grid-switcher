@@ -17,10 +17,10 @@ namespace WindowsDesktop
 		/// <summary>
 		/// Gets the unique identifier for the virtual desktop.
 		/// </summary>
-		public Guid Id { get; }
+        public Guid Id { get; private set;  }
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public IVirtualDesktop ComObject { get; }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public IVirtualDesktop ComObject { get; private set; }
 
 		private VirtualDesktop(IVirtualDesktop comObject)
 		{
@@ -50,7 +50,7 @@ namespace WindowsDesktop
 		/// </summary>
 		public void Remove(VirtualDesktop fallbackDesktop)
 		{
-			if (fallbackDesktop == null) throw new ArgumentNullException(nameof(fallbackDesktop));
+			if (fallbackDesktop == null) throw new ArgumentNullException();
 
 			ComInternal.RemoveDesktop(this.ComObject, fallbackDesktop.ComObject);
 		}
@@ -65,7 +65,7 @@ namespace WindowsDesktop
 			{
 				desktop = ComInternal.GetAdjacentDesktop(this.ComObject, AdjacentDesktop.LeftDirection);
 			}
-			catch (COMException ex) when (ex.Match(HResult.TYPE_E_OUTOFBOUNDS))
+			catch (COMException ex) // when (ex.Match(HResult.TYPE_E_OUTOFBOUNDS))
 			{
 				return null;
 			}
@@ -84,7 +84,7 @@ namespace WindowsDesktop
 			{
 				desktop = ComInternal.GetAdjacentDesktop(this.ComObject, AdjacentDesktop.RightDirection);
 			}
-			catch (COMException ex) when (ex.Match(HResult.TYPE_E_OUTOFBOUNDS))
+			catch (COMException ex) //when (ex.Match(HResult.TYPE_E_OUTOFBOUNDS))
 			{
 				return null;
 			}

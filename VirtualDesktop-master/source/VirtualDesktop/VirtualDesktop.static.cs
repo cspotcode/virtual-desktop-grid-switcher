@@ -13,21 +13,26 @@ namespace WindowsDesktop
 		private static readonly bool isSupportedInternal = true;
 		private static readonly ConcurrentDictionary<Guid, VirtualDesktop> wrappers = new ConcurrentDictionary<Guid, VirtualDesktop>();
 
-		internal static IVirtualDesktopManager ComManager { get; }
-		internal static IVirtualDesktopManagerInternal ComInternal { get; }
+        internal static IVirtualDesktopManager ComManager { get; private set;  }
+        internal static IVirtualDesktopManagerInternal ComInternal { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating whether the operating system is support virtual desktop.
 		/// </summary>
-		public static bool IsSupported =>
+        public static bool IsSupported {
+            get {
 #if DEBUG
-			isSupportedInternal;
+                return isSupportedInternal;
 #else
-			Environment.OSVersion.Version.Major >= 10 && isSupportedInternal;
+                return 
+                    //Environment.OSVersion.Version.Major >= 10 &&
+                    isSupportedInternal;
 #endif
+            }
+        }
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static Exception InitializationException { get; }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static Exception InitializationException { get; private set; }
 
 		/// <summary>
 		/// Gets the virtual desktop that is currently displayed.
@@ -126,7 +131,7 @@ namespace WindowsDesktop
 			{
 				desktop = ComInternal.FindDesktop(desktopId);
 			}
-			catch (COMException ex) when (ex.Match(HResult.TYPE_E_ELEMENTNOTFOUND))
+			catch (COMException ex) //when (ex.Match(HResult.TYPE_E_ELEMENTNOTFOUND))
 			{
 				return null;
 			}
@@ -150,7 +155,7 @@ namespace WindowsDesktop
 				var desktopId = ComManager.GetWindowDesktopId(hwnd);
 				desktop = ComInternal.FindDesktop(desktopId);
 			}
-			catch (COMException ex) when (ex.Match(HResult.REGDB_E_CLASSNOTREG, HResult.TYPE_E_ELEMENTNOTFOUND))
+			catch (COMException ex) //when (ex.Match(HResult.REGDB_E_CLASSNOTREG, HResult.TYPE_E_ELEMENTNOTFOUND))
 			{
 				return null;
 			}
