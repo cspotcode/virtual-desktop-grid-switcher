@@ -6,3 +6,4 @@ glob:*.suo
 glob:*.vcxprojResolveAssemblyReference.cache
 glob:*.opensdf
 glob:*.sdf
+glob:ipch/*
