@@ -3,6 +3,7 @@ glob:obj/*
 glob:Debug/*
 glob:Release/*
 glob:*.suo
+glob:*.csproj.user
 glob:*.vcxprojResolveAssemblyReference.cache
 glob:*.opensdf
 glob:*.sdf

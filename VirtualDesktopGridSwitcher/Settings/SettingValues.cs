@@ -14,19 +14,25 @@ namespace VirtualDesktopGridSwitcher.Settings {
         public event ApplyHandler Apply;
         public delegate bool ApplyHandler();
 
-        public int Rows = 3;
         public int Columns = 3;
+        public int Rows = 3;
 
         public bool WrapAround = false;
 
         public bool CtrlModifier = true;
-        public bool WinModifier = true;
-        public bool AltModifier = false;
+        public bool WinModifier = false;
+        public bool AltModifier = true;
         public bool ShiftModifier = false;
 
-        public bool FKeysForNumbers = true;
+        public bool FKeysForNumbers = false;
 
-        private const string SettingsFileName = "VirtualDesktopSwitcher.Settings";
+        private static string SettingsFileName { 
+            get {
+                var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                return Path.Combine(baseDir, "VirtualDesktopGridSwitcher.Settings");
+            }
+        }
+
 
         public static SettingValues Load() {
             if (!File.Exists(SettingsFileName)) {

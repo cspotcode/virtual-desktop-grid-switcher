@@ -26,7 +26,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
@@ -42,7 +42,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -52,7 +52,10 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>1.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -101,32 +104,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VDMHelper-master\VDMHelperCLR.Common\VDMHelperCLR.Common.csproj">
-      <Project>{48db157f-1959-406b-9967-0188158ae2b1}</Project>
-      <Name>VDMHelperCLR.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VDMHelper-master\VDMHelperCLR\VDMHelperCLR32.vcxproj">
-      <Project>{feadd64f-60b8-4a91-bf82-aa9acb13afcc}</Project>
-      <Name>VDMHelperCLR32</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VDMHelper-master\VDMHelperCLR\VDMHelperCLR64.vcxproj">
-      <Project>{8f914bb3-4b02-404e-b454-2b6fd868286a}</Project>
-      <Name>VDMHelperCLR64</Name>
-    </ProjectReference>
     <ProjectReference Include="..\VirtualDesktop-master\source\VirtualDesktop\VirtualDesktop.csproj">
       <Project>{ab848ecd-76aa-41c0-b63d-86a8591b25aa}</Project>
       <Name>VirtualDesktop</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\VDMHelper-master\Assemblies\VDMHelper32.dll">
-      <Link>VDMHelper32.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\VDMHelper-master\Assemblies\VDMHelper64.dll">
-      <Link>VDMHelper64.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="1.ico" />
     <Content Include="Icons\1.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

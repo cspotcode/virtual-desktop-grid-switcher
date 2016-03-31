@@ -42,7 +42,7 @@
             // 
             this.labelRows.AutoSize = true;
             this.labelRows.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelRows.Location = new System.Drawing.Point(13, 13);
+            this.labelRows.Location = new System.Drawing.Point(161, 11);
             this.labelRows.Name = "labelRows";
             this.labelRows.Size = new System.Drawing.Size(48, 16);
             this.labelRows.TabIndex = 0;
@@ -52,7 +52,7 @@
             // 
             this.labelColumns.AutoSize = true;
             this.labelColumns.Font = new System.Drawing.Font("Verdana", 9.75F);
-            this.labelColumns.Location = new System.Drawing.Point(13, 39);
+            this.labelColumns.Location = new System.Drawing.Point(12, 11);
             this.labelColumns.Name = "labelColumns";
             this.labelColumns.Size = new System.Drawing.Size(68, 16);
             this.labelColumns.TabIndex = 1;
@@ -62,7 +62,7 @@
             // 
             this.checkBoxWrapAround.AutoSize = true;
             this.checkBoxWrapAround.Font = new System.Drawing.Font("Verdana", 9.75F);
-            this.checkBoxWrapAround.Location = new System.Drawing.Point(196, 12);
+            this.checkBoxWrapAround.Location = new System.Drawing.Point(310, 10);
             this.checkBoxWrapAround.Name = "checkBoxWrapAround";
             this.checkBoxWrapAround.Size = new System.Drawing.Size(112, 20);
             this.checkBoxWrapAround.TabIndex = 2;
@@ -73,22 +73,22 @@
             // 
             this.labelKeyModifiers.AutoSize = true;
             this.labelKeyModifiers.Font = new System.Drawing.Font("Verdana", 9.75F);
-            this.labelKeyModifiers.Location = new System.Drawing.Point(13, 64);
+            this.labelKeyModifiers.Location = new System.Drawing.Point(13, 39);
             this.labelKeyModifiers.Name = "labelKeyModifiers";
-            this.labelKeyModifiers.Size = new System.Drawing.Size(123, 16);
+            this.labelKeyModifiers.Size = new System.Drawing.Size(180, 16);
             this.labelKeyModifiers.TabIndex = 3;
-            this.labelKeyModifiers.Text = "Hotkey Modifiers:";
+            this.labelKeyModifiers.Text = "Switch Desktop Modifiers:";
             // 
             // textBoxRows
             // 
-            this.textBoxRows.Location = new System.Drawing.Point(87, 10);
+            this.textBoxRows.Location = new System.Drawing.Point(215, 10);
             this.textBoxRows.Name = "textBoxRows";
             this.textBoxRows.Size = new System.Drawing.Size(49, 20);
             this.textBoxRows.TabIndex = 4;
             // 
             // textBoxColumns
             // 
-            this.textBoxColumns.Location = new System.Drawing.Point(87, 36);
+            this.textBoxColumns.Location = new System.Drawing.Point(86, 10);
             this.textBoxColumns.Name = "textBoxColumns";
             this.textBoxColumns.Size = new System.Drawing.Size(49, 20);
             this.textBoxColumns.TabIndex = 5;
@@ -97,7 +97,7 @@
             // 
             this.checkBoxCtrlModifier.AutoSize = true;
             this.checkBoxCtrlModifier.Font = new System.Drawing.Font("Verdana", 9.75F);
-            this.checkBoxCtrlModifier.Location = new System.Drawing.Point(140, 63);
+            this.checkBoxCtrlModifier.Location = new System.Drawing.Point(198, 38);
             this.checkBoxCtrlModifier.Name = "checkBoxCtrlModifier";
             this.checkBoxCtrlModifier.Size = new System.Drawing.Size(50, 20);
             this.checkBoxCtrlModifier.TabIndex = 6;
@@ -108,7 +108,7 @@
             // 
             this.checkBoxShiftModifier.AutoSize = true;
             this.checkBoxShiftModifier.Font = new System.Drawing.Font("Verdana", 9.75F);
-            this.checkBoxShiftModifier.Location = new System.Drawing.Point(308, 63);
+            this.checkBoxShiftModifier.Location = new System.Drawing.Point(366, 38);
             this.checkBoxShiftModifier.Name = "checkBoxShiftModifier";
             this.checkBoxShiftModifier.Size = new System.Drawing.Size(58, 20);
             this.checkBoxShiftModifier.TabIndex = 7;
@@ -119,7 +119,7 @@
             // 
             this.checkBoxAltModifier.AutoSize = true;
             this.checkBoxAltModifier.Font = new System.Drawing.Font("Verdana", 9.75F);
-            this.checkBoxAltModifier.Location = new System.Drawing.Point(252, 63);
+            this.checkBoxAltModifier.Location = new System.Drawing.Point(310, 38);
             this.checkBoxAltModifier.Name = "checkBoxAltModifier";
             this.checkBoxAltModifier.Size = new System.Drawing.Size(45, 20);
             this.checkBoxAltModifier.TabIndex = 8;
@@ -130,7 +130,7 @@
             // 
             this.checkBoxWinModifier.AutoSize = true;
             this.checkBoxWinModifier.Font = new System.Drawing.Font("Verdana", 9.75F);
-            this.checkBoxWinModifier.Location = new System.Drawing.Point(196, 63);
+            this.checkBoxWinModifier.Location = new System.Drawing.Point(254, 38);
             this.checkBoxWinModifier.Name = "checkBoxWinModifier";
             this.checkBoxWinModifier.Size = new System.Drawing.Size(51, 20);
             this.checkBoxWinModifier.TabIndex = 9;
@@ -141,7 +141,7 @@
             // 
             this.checkBoxFKeys.AutoSize = true;
             this.checkBoxFKeys.Font = new System.Drawing.Font("Verdana", 9.75F);
-            this.checkBoxFKeys.Location = new System.Drawing.Point(16, 89);
+            this.checkBoxFKeys.Location = new System.Drawing.Point(16, 64);
             this.checkBoxFKeys.Name = "checkBoxFKeys";
             this.checkBoxFKeys.Size = new System.Drawing.Size(150, 20);
             this.checkBoxFKeys.TabIndex = 10;
@@ -153,7 +153,7 @@
             this.buttonApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonApply.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonApply.Font = new System.Drawing.Font("Verdana", 9.75F);
-            this.buttonApply.Location = new System.Drawing.Point(233, 114);
+            this.buttonApply.Location = new System.Drawing.Point(263, 86);
             this.buttonApply.Name = "buttonApply";
             this.buttonApply.Size = new System.Drawing.Size(75, 23);
             this.buttonApply.TabIndex = 11;
@@ -166,7 +166,7 @@
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonCancel.Font = new System.Drawing.Font("Verdana", 9.75F);
-            this.buttonCancel.Location = new System.Drawing.Point(316, 114);
+            this.buttonCancel.Location = new System.Drawing.Point(346, 86);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 12;
@@ -177,7 +177,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(403, 149);
+            this.ClientSize = new System.Drawing.Size(433, 121);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonApply);
             this.Controls.Add(this.checkBoxFKeys);
