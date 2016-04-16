@@ -23,9 +23,16 @@ namespace VirtualDesktopGridSwitcher {
         private Dictionary<VirtualDesktop, int> desktopIdLookup;
         private VirtualDesktop[] desktops;
 
-        //[DllImport("user32.dll")]
-        //static extern IntPtr GetForegroundWindow();
-        
+        [DllImport("user32.dll")]
+        static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        static extern short GetAsyncKeyState(int vKey); 
+
+        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
         public VirtualDesktopGridManager(SysTrayProcess sysTrayProcess, SettingValues settings)
         {
             this.settings = settings;
@@ -115,6 +122,7 @@ namespace VirtualDesktopGridSwitcher {
             }
             private set {
                 if (desktops != null) {
+                    ReleaseModifierKeys();
                     desktops[value].Switch();
                 } else {
                     _current = value;
@@ -317,5 +325,38 @@ namespace VirtualDesktopGridSwitcher {
             hotkeys = null;
         }
 
+
+        private void ReleaseModifierKeys() {
+            const int WM_KEYUP = 0x101;
+            const int VK_SHIFT = 0x10;
+            const int VK_CONTROL = 0x11;
+            const int VK_MENU = 0x12;
+            const int VK_LWIN = 0x5B;
+            const int VK_RWIN = 0x5C;
+
+            var activeHWnd = GetForegroundWindow();
+            if (IsKeyPressed(GetAsyncKeyState(VK_MENU))) {
+                PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_MENU, (IntPtr)0xC0380001);
+                PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_MENU, (IntPtr)0xC1380001);
+            }
+            if (IsKeyPressed(GetAsyncKeyState(VK_CONTROL))) {
+                PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_CONTROL, (IntPtr)0xC01D0001);
+                PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_CONTROL, (IntPtr)0xC11D0001);
+            }
+            if (IsKeyPressed(GetAsyncKeyState(VK_SHIFT))) {
+                PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_SHIFT, (IntPtr)0xC02A0001);
+                PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_SHIFT, (IntPtr)0xC0360001);
+            }
+            if (IsKeyPressed(GetAsyncKeyState(VK_LWIN))) {
+                PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_LWIN, (IntPtr)0xC15B0001);
+            }
+            if (IsKeyPressed(GetAsyncKeyState(VK_RWIN))) {
+                PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_RWIN, (IntPtr)0xC15C0001);
+            }
+        }
+
+        private bool IsKeyPressed(short keystate) {
+            return (keystate & 0x8000) != 0;
+        }
     }
 }
