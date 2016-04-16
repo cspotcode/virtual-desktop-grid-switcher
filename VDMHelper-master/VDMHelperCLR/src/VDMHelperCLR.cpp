@@ -12,11 +12,14 @@ namespace VDMHelperCLR
 {
 	VdmHelper::VdmHelper() : hCWPHook(0), hGMHook(0)
 	{
+		SetLastError(0);
 #ifdef _WIN64
-		hvdm = ::LoadLibrary(_T("VDMHelper64.dll"));
+		hvdm = ::LoadLibrary(_T("D:\\VirtualDesktopGridSwitcher\\Debug\\VDMHelper64.dll"));
 #else
-		hvdm = ::LoadLibrary(_T("VDMHelper32.dll"));
+		hvdm = ::LoadLibrary(_T("D:\\VirtualDesktopGridSwitcher\\Debug\\VDMHelper32.dll"));
 #endif
+		DWORD error = GetLastError();
+
 		GPA(hvdm, VDMHookProc1);
 		GPA(hvdm, VDMHookProc2);
 		GPA(hvdm, VDMAllocGuid);

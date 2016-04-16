@@ -8,3 +8,4 @@ glob:*.vcxprojResolveAssemblyReference.cache
 glob:*.opensdf
 glob:*.sdf
 glob:ipch/*
+glob:*.vcxproj.user
