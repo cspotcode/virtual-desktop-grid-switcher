@@ -23,6 +23,7 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsDialog));
             this.labelRows = new System.Windows.Forms.Label();
             this.labelColumns = new System.Windows.Forms.Label();
             this.checkBoxWrapAround = new System.Windows.Forms.CheckBox();
@@ -255,6 +256,7 @@
             this.Controls.Add(this.checkBoxWrapAround);
             this.Controls.Add(this.labelColumns);
             this.Controls.Add(this.labelRows);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SettingsDialog";
             this.Text = "Virtual Desktop Grid Switcher Settings";
             this.ResumeLayout(false);
