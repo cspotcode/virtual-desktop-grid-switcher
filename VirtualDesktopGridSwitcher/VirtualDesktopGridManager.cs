@@ -22,9 +22,13 @@ namespace VirtualDesktopGridSwitcher {
 
         private Dictionary<VirtualDesktop, int> desktopIdLookup;
         private VirtualDesktop[] desktops;
+        private IntPtr[] activeWindows;
 
         [DllImport("user32.dll")]
         static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        static extern IntPtr SetForegroundWindow(IntPtr hWnd);
 
         [DllImport("user32.dll")]
         static extern short GetAsyncKeyState(int vKey); 
@@ -72,6 +76,8 @@ namespace VirtualDesktopGridSwitcher {
 
                 this._current = desktopIdLookup[VirtualDesktop.Current];
 
+                activeWindows = new IntPtr[desktops.Length];
+
                 VirtualDesktop.CurrentChanged += VirtualDesktop_CurrentChanged;
             } catch { }
 
@@ -95,6 +101,7 @@ namespace VirtualDesktopGridSwitcher {
                 VirtualDesktop.CurrentChanged -= VirtualDesktop_CurrentChanged;
                 desktops = null;
                 desktopIdLookup = null;
+                activeWindows = null;
             }
         }
 
@@ -113,6 +120,9 @@ namespace VirtualDesktopGridSwitcher {
         private void VirtualDesktop_CurrentChanged(object sender, VirtualDesktopChangedEventArgs e) {
             this._current = desktopIdLookup[VirtualDesktop.Current];
             sysTrayProcess.ShowIconForDesktop(this._current);
+            if (activeWindows[Current] != IntPtr.Zero) {
+                SetForegroundWindow(activeWindows[Current]);
+            }
             ReleaseModifierKeys();
         }
 
@@ -189,29 +199,20 @@ namespace VirtualDesktopGridSwitcher {
         }
 
         public void Switch(int index) {
+            activeWindows[Current] = GetForegroundWindow();
             Current = index;
         }
 
-        public int SwitchLeft() {
-            Current = Left;
-            return Current;
+        public void Move(int index) {
+            var window = GetForegroundWindow();
+            this.VDMHelper.MoveWindowToDesktop(window, desktops[index].Id);
+            activeWindows[Current] = IntPtr.Zero;
+            // VDMHelper sets window as foreground so avoid setting in changed event
+            activeWindows[index] = IntPtr.Zero;
+            Current = index;
+            activeWindows[index] = window;
         }
 
-        public int SwitchRight() {
-            Current = Right;
-            return Current;
-        }
-
-        public int SwitchUp() {
-            Current = Up;
-            return Current;
-        }
-
-        public int SwitchDown() {
-            Current = Down;
-            return Current;
-        }
-        
         private int ColumnOf(int index) {
             return ((index + settings.Columns) % settings.Columns);
         }
@@ -226,54 +227,24 @@ namespace VirtualDesktopGridSwitcher {
             
             hotkeys = new List<Hotkey>();
 
-            RegisterSwitchHotkey(Keys.Left, delegate { this.SwitchLeft(); });
-            RegisterSwitchHotkey(Keys.Right, delegate { this.SwitchRight(); });
-            RegisterSwitchHotkey(Keys.Up, delegate { this.SwitchUp(); });
-            RegisterSwitchHotkey(Keys.Down, delegate { this.SwitchDown(); });
+            RegisterSwitchHotkey(Keys.Left, delegate { this.Switch(Left); });
+            RegisterSwitchHotkey(Keys.Right, delegate { this.Switch(Right); });
+            RegisterSwitchHotkey(Keys.Up, delegate { this.Switch(Up); });
+            RegisterSwitchHotkey(Keys.Down, delegate { this.Switch(Down); });
 
-            RegisterMoveHotkey(
-                Keys.Left,
-                delegate {
-                    var window = GetForegroundWindow();
-                    this.VDMHelper.MoveWindowToDesktop(window, desktops[Left].Id);
-                    SwitchLeft();
-                });
-            RegisterMoveHotkey(
-                Keys.Right,
-                delegate {
-                    var window = GetForegroundWindow();
-                    this.VDMHelper.MoveWindowToDesktop(window, desktops[Right].Id);
-                    SwitchRight();
-                });
-            RegisterMoveHotkey(
-                Keys.Up,
-                delegate {
-                    var window = GetForegroundWindow();
-                    this.VDMHelper.MoveWindowToDesktop(window, desktops[Up].Id);
-                    SwitchUp();
-                });
-            RegisterMoveHotkey(
-                Keys.Down,
-                delegate {
-                    var window = GetForegroundWindow();
-                    this.VDMHelper.MoveWindowToDesktop(window, desktops[Down].Id);
-                    SwitchDown();
-                });
+            RegisterMoveHotkey(Keys.Left, delegate { Move(Left); });
+            RegisterMoveHotkey(Keys.Right, delegate { Move(Right); });
+            RegisterMoveHotkey(Keys.Up, delegate { Move(Up); });
+            RegisterMoveHotkey(Keys.Down, delegate { Move(Down); });
 
             for (int keyNumber = 1; keyNumber <= Math.Min(DesktopCount, settings.FKeysForNumbers ?  12 : 9) ; ++keyNumber) {
                 var desktopIndex = keyNumber - 1;
                 Keys keycode =
                     (Keys)Enum.Parse(typeof(Keys), (settings.FKeysForNumbers ? "F" : "D") + keyNumber.ToString());
                 
-                RegisterSwitchHotkey( keycode, delegate { this.Switch(desktopIndex); });
+                RegisterSwitchHotkey(keycode, delegate { this.Switch(desktopIndex); });
 
-                RegisterMoveHotkey(
-                    keycode,
-                    delegate {
-                        var window = GetForegroundWindow();
-                        this.VDMHelper.MoveWindowToDesktop(window, desktops[desktopIndex].Id);
-                        this.Switch(desktopIndex);
-                    });
+                RegisterMoveHotkey(keycode, delegate { this.Move(desktopIndex); });
             }
 
         }
