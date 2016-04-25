@@ -280,10 +280,10 @@ namespace VirtualDesktopGridSwitcher {
 
         private void RegisterSwitchHotkey(Keys keycode, Action action) {
             Hotkey hk = new Hotkey() {
-                Control = settings.CtrlModifier,
-                Windows = settings.WinModifier,
-                Alt = settings.AltModifier,
-                Shift = settings.ShiftModifier,
+                Control = settings.CtrlModifierSwitch,
+                Windows = settings.WinModifierSwitch,
+                Alt = settings.AltModifierSwitch,
+                Shift = settings.ShiftModifierSwitch,
                 KeyCode = keycode
             };
             hk.Pressed += delegate { action(); };
@@ -301,10 +301,10 @@ namespace VirtualDesktopGridSwitcher {
         {
             Hotkey hk = new Hotkey()
             {
-                Control = settings.CtrlModifier,
-                Windows = settings.WinModifier,
-                Alt = settings.AltModifier,
-                Shift = true,
+                Control = settings.CtrlModifierMove,
+                Windows = settings.WinModifierMove,
+                Alt = settings.AltModifierMove,
+                Shift = settings.ShiftModifierMove,
                 KeyCode = keycode
             };
             hk.Pressed += delegate { action(); };

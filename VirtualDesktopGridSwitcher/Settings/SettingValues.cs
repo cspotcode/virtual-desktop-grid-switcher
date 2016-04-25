@@ -19,10 +19,15 @@ namespace VirtualDesktopGridSwitcher.Settings {
 
         public bool WrapAround = false;
 
-        public bool CtrlModifier = true;
-        public bool WinModifier = false;
-        public bool AltModifier = true;
-        public bool ShiftModifier = false;
+        public bool CtrlModifierSwitch = true;
+        public bool WinModifierSwitch = false;
+        public bool AltModifierSwitch = true;
+        public bool ShiftModifierSwitch = false;
+
+        public bool CtrlModifierMove = true;
+        public bool WinModifierMove = false;
+        public bool AltModifierMove = true;
+        public bool ShiftModifierMove = true;
 
         public bool FKeysForNumbers = false;
 

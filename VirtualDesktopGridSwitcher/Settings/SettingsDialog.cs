@@ -36,10 +36,15 @@ namespace VirtualDesktopGridSwitcher.Settings {
 
             checkBoxWrapAround.Checked = settings.WrapAround;
 
-            checkBoxCtrlModifier.Checked = settings.CtrlModifier;
-            checkBoxWinModifier.Checked = settings.WinModifier;
-            checkBoxAltModifier.Checked = settings.AltModifier;
-            checkBoxShiftModifier.Checked = settings.ShiftModifier;
+            checkBoxCtrlModifierSwitch.Checked = settings.CtrlModifierSwitch;
+            checkBoxWinModifierSwitch.Checked = settings.WinModifierSwitch;
+            checkBoxAltModifierSwitch.Checked = settings.AltModifierSwitch;
+            checkBoxShiftModifierSwitch.Checked = settings.ShiftModifierSwitch;
+
+            checkBoxCtrlModifierMove.Checked = settings.CtrlModifierMove;
+            checkBoxWinModifierMove.Checked = settings.WinModifierMove;
+            checkBoxAltModifierMove.Checked = settings.AltModifierMove;
+            checkBoxShiftModifierMove.Checked = settings.ShiftModifierMove;
 
             checkBoxFKeys.Checked = settings.FKeysForNumbers;
         }
@@ -76,10 +81,15 @@ namespace VirtualDesktopGridSwitcher.Settings {
 
             settings.WrapAround = checkBoxWrapAround.Checked;
 
-            settings.CtrlModifier = checkBoxCtrlModifier.Checked;
-            settings.WinModifier = checkBoxWinModifier.Checked;
-            settings.AltModifier = checkBoxAltModifier.Checked;
-            settings.ShiftModifier = checkBoxShiftModifier.Checked;
+            settings.CtrlModifierSwitch = checkBoxCtrlModifierSwitch.Checked;
+            settings.WinModifierSwitch = checkBoxWinModifierSwitch.Checked;
+            settings.AltModifierSwitch = checkBoxAltModifierSwitch.Checked;
+            settings.ShiftModifierSwitch = checkBoxShiftModifierSwitch.Checked;
+
+            settings.CtrlModifierMove = checkBoxCtrlModifierMove.Checked;
+            settings.WinModifierMove = checkBoxWinModifierMove.Checked;
+            settings.AltModifierMove = checkBoxAltModifierMove.Checked;
+            settings.ShiftModifierMove = checkBoxShiftModifierMove.Checked;
 
             settings.FKeysForNumbers = checkBoxFKeys.Checked;
 
