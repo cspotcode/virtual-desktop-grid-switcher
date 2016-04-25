@@ -84,6 +84,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\VDMHelper-master\VDMHelperCLR.Common\VDMHelperCLR.Common.csproj">
+      <Project>{48db157f-1959-406b-9967-0188158ae2b1}</Project>
+      <Name>VDMHelperCLR.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VirtualDesktop-master\source\VirtualDesktop\VirtualDesktop.csproj">
       <Project>{ab848ecd-76aa-41c0-b63d-86a8591b25aa}</Project>
       <Name>VirtualDesktop</Name>

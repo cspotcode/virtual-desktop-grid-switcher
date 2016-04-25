@@ -14,9 +14,9 @@ namespace VDMHelperCLR
 	{
 		SetLastError(0);
 #ifdef _WIN64
-		hvdm = ::LoadLibrary(_T("D:\\VirtualDesktopGridSwitcher\\Debug\\VDMHelper64.dll"));
+		hvdm = ::LoadLibrary(_T("VDMHelper64.dll"));
 #else
-		hvdm = ::LoadLibrary(_T("D:\\VirtualDesktopGridSwitcher\\Debug\\VDMHelper32.dll"));
+		hvdm = ::LoadLibrary(_T("VDMHelper32.dll"));
 #endif
 		DWORD error = GetLastError();
 
