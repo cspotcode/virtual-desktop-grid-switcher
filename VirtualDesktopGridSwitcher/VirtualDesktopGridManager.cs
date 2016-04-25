@@ -113,6 +113,7 @@ namespace VirtualDesktopGridSwitcher {
         private void VirtualDesktop_CurrentChanged(object sender, VirtualDesktopChangedEventArgs e) {
             this._current = desktopIdLookup[VirtualDesktop.Current];
             sysTrayProcess.ShowIconForDesktop(this._current);
+            ReleaseModifierKeys();
         }
 
         private int _current;
@@ -124,7 +125,6 @@ namespace VirtualDesktopGridSwitcher {
                 if (desktops != null) {
                     ReleaseModifierKeys();
                     desktops[value].Switch();
-                    ReleaseModifierKeys();
                 } else {
                     _current = value;
                     sysTrayProcess.ShowIconForDesktop(this._current);
