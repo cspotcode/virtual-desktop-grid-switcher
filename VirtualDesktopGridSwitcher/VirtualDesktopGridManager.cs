@@ -37,6 +37,14 @@ namespace VirtualDesktopGridSwitcher {
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
+        delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
+
+        [DllImport("user32.dll")]
+        static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
+
+        private const uint WINEVENT_OUTOFCONTEXT = 0;
+        private const uint EVENT_SYSTEM_FOREGROUND = 3;
+
         public VirtualDesktopGridManager(SysTrayProcess sysTrayProcess, SettingValues settings)
         {
             this.settings = settings;
@@ -44,6 +52,9 @@ namespace VirtualDesktopGridSwitcher {
 
             this.VDMHelper = VdmHelperFactory.CreateInstance();
             this.VDMHelper.Init();
+
+            WinEventDelegate dele = new WinEventDelegate(ForegroundWindowChanged);
+            SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, dele, 0, 0, WINEVENT_OUTOFCONTEXT);
 
             Start();
         }
@@ -95,7 +106,7 @@ namespace VirtualDesktopGridSwitcher {
         }
 
         private void Stop() {
-            settings.Apply += Restart;
+            settings.Apply -= Restart;
             UnregisterHotKeys();
             if (desktops != null) {
                 VirtualDesktop.CurrentChanged -= VirtualDesktop_CurrentChanged;
@@ -124,6 +135,12 @@ namespace VirtualDesktopGridSwitcher {
                 SetForegroundWindow(activeWindows[Current]);
             }
             ReleaseModifierKeys();
+        }
+
+        void ForegroundWindowChanged(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime) {
+            if (desktops != null) {
+                activeWindows[desktopIdLookup[VirtualDesktop.Current]] = hwnd;
+            }
         }
 
         private int _current;
