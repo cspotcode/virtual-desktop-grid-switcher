@@ -134,13 +134,13 @@ namespace VirtualDesktopGridSwitcher {
             if (activeWindows[Current] != IntPtr.Zero) {
                 SetForegroundWindow(activeWindows[Current]);
             }
-            ReleaseModifierKeys();
         }
 
         void ForegroundWindowChanged(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime) {
             if (desktops != null) {
                 activeWindows[desktopIdLookup[VirtualDesktop.Current]] = hwnd;
             }
+            ReleaseModifierKeys();
         }
 
         private int _current;
@@ -150,7 +150,6 @@ namespace VirtualDesktopGridSwitcher {
             }
             private set {
                 if (desktops != null) {
-                    ReleaseModifierKeys();
                     desktops[value].Switch();
                 } else {
                     _current = value;
