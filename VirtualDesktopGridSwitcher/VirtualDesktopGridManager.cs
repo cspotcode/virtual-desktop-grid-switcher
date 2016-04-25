@@ -140,7 +140,7 @@ namespace VirtualDesktopGridSwitcher {
             if (desktops != null) {
                 activeWindows[desktopIdLookup[VirtualDesktop.Current]] = hwnd;
             }
-            ReleaseModifierKeys();
+            //ReleaseModifierKeys();
         }
 
         private int _current;
