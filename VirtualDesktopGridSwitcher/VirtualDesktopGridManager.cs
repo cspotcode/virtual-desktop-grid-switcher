@@ -124,6 +124,7 @@ namespace VirtualDesktopGridSwitcher {
                 if (desktops != null) {
                     ReleaseModifierKeys();
                     desktops[value].Switch();
+                    ReleaseModifierKeys();
                 } else {
                     _current = value;
                     sysTrayProcess.ShowIconForDesktop(this._current);
