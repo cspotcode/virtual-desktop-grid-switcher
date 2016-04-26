@@ -45,6 +45,8 @@ namespace VirtualDesktopGridSwitcher {
         private const uint WINEVENT_OUTOFCONTEXT = 0;
         private const uint EVENT_SYSTEM_FOREGROUND = 3;
 
+        private WinEventDelegate foregroundWindowChangedDelegate;
+
         public VirtualDesktopGridManager(SysTrayProcess sysTrayProcess, SettingValues settings)
         {
             this.settings = settings;
@@ -53,8 +55,8 @@ namespace VirtualDesktopGridSwitcher {
             this.VDMHelper = VdmHelperFactory.CreateInstance();
             this.VDMHelper.Init();
 
-            WinEventDelegate dele = new WinEventDelegate(ForegroundWindowChanged);
-            SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, dele, 0, 0, WINEVENT_OUTOFCONTEXT);
+            foregroundWindowChangedDelegate = new WinEventDelegate(ForegroundWindowChanged);
+            SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, foregroundWindowChangedDelegate, 0, 0, WINEVENT_OUTOFCONTEXT);
 
             Start();
         }
