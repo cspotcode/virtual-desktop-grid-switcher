@@ -134,7 +134,10 @@ namespace VirtualDesktopGridSwitcher {
             this._current = desktopIdLookup[VirtualDesktop.Current];
             sysTrayProcess.ShowIconForDesktop(this._current);
             if (activeWindows[Current] != IntPtr.Zero) {
-                SetForegroundWindow(activeWindows[Current]);
+                var desktop = VirtualDesktop.FromHwnd(activeWindows[Current]);
+                if (desktop != null && desktopIdLookup[desktop] == this._current) {
+                    SetForegroundWindow(activeWindows[Current]);
+                }
             }
         }
 
