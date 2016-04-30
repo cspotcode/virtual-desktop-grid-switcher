@@ -17,6 +17,9 @@ Modifed MIT Licensed code from
 https://github.com/Grabacr07/VirtualDesktop
 by Manato KAMEYA
 
+This library was made possible by NikoTin who did the hard part... 
+http://www.cyberforum.ru/blogs/105416/blog3671.html
+
 Global Hotkeys With .NET
 ------------------------
 Modified Public Domain code found at
