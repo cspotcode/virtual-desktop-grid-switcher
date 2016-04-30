@@ -1,4 +1,7 @@
-Thanks to all below without whom this would have been mutch harder.
+Thanks to all below without whom this would have been much harder.
+
+Also thanks to Johan Piculell for VirtuaWin (http://virtuawin.sourceforge.net/)
+which I have used for years and inspired Virtual Desktop Grid Switcher.
 
 All Licenses at bottom further below.
 
