@@ -9,3 +9,4 @@ glob:*.opensdf
 glob:*.sdf
 glob:ipch/*
 glob:*.vcxproj.user
+glob:.git
