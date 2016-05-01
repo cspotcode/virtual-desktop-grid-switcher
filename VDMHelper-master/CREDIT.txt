@@ -1,0 +1,11 @@
+VDMHelper Library
+-----------------
+Modifed MIT Licensed code from
+https://github.com/tmyt/VDMHelper
+by Yutaka Tsumori
+
+Assemblies
+----------
+Pre-built VDMHelper dlls from
+https://github.com/Grabacr07/SylphyHorn
+by Manato KAMEYA
