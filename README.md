@@ -1,0 +1,2 @@
+# **IF YOU HAVE TRIED VirtualDesktopGridSwitcher AND IT FAILED TO RUN YOU PROBABLY NEED TO "UNBLOCK" THE ZIP FILE IN FILE PROPERTIES BEFORE EXTRACTING**
+**See the Installation Guide in the Wiki section for more information**
