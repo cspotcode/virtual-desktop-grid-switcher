@@ -31,6 +31,15 @@ namespace VirtualDesktopGridSwitcher.Settings {
 
         public bool FKeysForNumbers = false;
 
+        public Dictionary<string, string> WebBrowserProgIDToExe =
+            new Dictionary<string, string> {
+                { "AppXq0fevzme2pys62n3e0fbqa7peapykr8v", "ApplicationFrameHost.exe" }, // Edge
+                { "IE.HTTP", "iexplore.exe" },
+                { "ChromeHTML", "chrome.exe" },
+                { "FirefoxURL", "firefox.exe" },
+                { "OperaStable" , "opera.exe"}
+            };
+
         private static string SettingsFileName { 
             get {
                 var baseDir = AppDomain.CurrentDomain.BaseDirectory;

@@ -9,7 +9,8 @@ using GlobalHotkeyWithDotNET;
 using VDMHelperCLR.Common;
 using VirtualDesktopGridSwitcher.Settings;
 using WindowsDesktop;
-
+using System.IO;
+using Microsoft.Win32;
 
 namespace VirtualDesktopGridSwitcher {
 
@@ -23,12 +24,22 @@ namespace VirtualDesktopGridSwitcher {
         private Dictionary<VirtualDesktop, int> desktopIdLookup;
         private VirtualDesktop[] desktops;
         private IntPtr[] activeWindows;
+        private IntPtr[] lastActiveBrowserWindows;
 
         [DllImport("user32.dll")]
         static extern IntPtr GetForegroundWindow();
 
         [DllImport("user32.dll")]
         static extern IntPtr SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll", SetLastError= true)]
+        static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr OpenProcess(ProcessAccessFlags processAccess, bool bInheritHandle, int processId);
+
+        [DllImport("psapi.dll")]
+        static extern uint GetProcessImageFileName(IntPtr hProcess, [Out] StringBuilder lpImageFileName, [In] [MarshalAs(UnmanagedType.U4)] int nSize);
 
         [DllImport("user32.dll")]
         static extern short GetAsyncKeyState(int vKey); 
@@ -90,6 +101,7 @@ namespace VirtualDesktopGridSwitcher {
                 this._current = desktopIdLookup[VirtualDesktop.Current];
 
                 activeWindows = new IntPtr[desktops.Length];
+                lastActiveBrowserWindows = new IntPtr[desktops.Length];
 
                 VirtualDesktop.CurrentChanged += VirtualDesktop_CurrentChanged;
             } catch { }
@@ -115,6 +127,7 @@ namespace VirtualDesktopGridSwitcher {
                 desktops = null;
                 desktopIdLookup = null;
                 activeWindows = null;
+                lastActiveBrowserWindows = null;
             }
         }
 
@@ -130,22 +143,65 @@ namespace VirtualDesktopGridSwitcher {
             }
         }
         
-        private void VirtualDesktop_CurrentChanged(object sender, VirtualDesktopChangedEventArgs e) {
+        private void VirtualDesktop_CurrentChanged(object sender, VirtualDesktopChangedEventArgs e)
+        {
             this._current = desktopIdLookup[VirtualDesktop.Current];
             sysTrayProcess.ShowIconForDesktop(this._current);
-            if (activeWindows[Current] != IntPtr.Zero) {
-                var desktop = VirtualDesktop.FromHwnd(activeWindows[Current]);
-                if (desktop != null && desktopIdLookup[desktop] == this._current) {
-                    SetForegroundWindow(activeWindows[Current]);
+            ActivateWindow(lastActiveBrowserWindows[Current]);
+            ActivateWindow(activeWindows[Current]);
+        }
+
+        private void ActivateWindow(IntPtr currentActive)
+        {
+            if (currentActive != IntPtr.Zero)
+            {
+                var desktop = VirtualDesktop.FromHwnd(currentActive);
+                if (desktop != null && desktopIdLookup[desktop] == this._current)
+                {
+                    SetForegroundWindow(currentActive);
                 }
             }
         }
 
         void ForegroundWindowChanged(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime) {
-            if (desktops != null) {
+            if (desktops != null)
+            {
                 activeWindows[desktopIdLookup[VirtualDesktop.Current]] = hwnd;
+
+                if (IsWindowDefaultBrowser(hwnd)) {
+                    lastActiveBrowserWindows[desktopIdLookup[VirtualDesktop.Current]] = hwnd;
+                }
             }
             //ReleaseModifierKeys();
+        }
+
+        private static string GetWindowExeName(IntPtr hwnd) {
+            uint pid = 0;
+            GetWindowThreadProcessId(hwnd, out pid);
+
+            IntPtr pic = OpenProcess(ProcessAccessFlags.All, true, (int)pid);
+
+            StringBuilder exeDevicePath = new StringBuilder(1024);
+            GetProcessImageFileName(pic, exeDevicePath, exeDevicePath.Capacity);
+            var exeName = Path.GetFileName(exeDevicePath.ToString());
+
+            return exeName;
+        }
+
+        private bool IsWindowDefaultBrowser(IntPtr hwnd) {
+            const string userChoice = @"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice";
+            using (RegistryKey userChoiceKey = Registry.CurrentUser.OpenSubKey(userChoice)) {
+                if (userChoiceKey != null) {
+                    object progIdValue = userChoiceKey.GetValue("Progid");
+                    if (progIdValue != null && settings.WebBrowserProgIDToExe.ContainsKey(progIdValue.ToString())) {
+                        if (GetWindowExeName(hwnd) == settings.WebBrowserProgIDToExe[progIdValue.ToString()]) {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
 
         private int _current;
@@ -224,10 +280,14 @@ namespace VirtualDesktopGridSwitcher {
             Current = index;
         }
 
-        public void Move(int index) {
+        public void Move(int index)
+        {
             var window = GetForegroundWindow();
             this.VDMHelper.MoveWindowToDesktop(window, desktops[index].Id);
             activeWindows[Current] = IntPtr.Zero;
+            if (IsWindowDefaultBrowser(window)) {
+                lastActiveBrowserWindows[Current] = IntPtr.Zero;
+            }
             // VDMHelper sets window as foreground so avoid setting in changed event
             activeWindows[index] = IntPtr.Zero;
             Current = index;
@@ -351,5 +411,22 @@ namespace VirtualDesktopGridSwitcher {
         private bool IsKeyPressed(short keystate) {
             return (keystate & 0x8000) != 0;
         }
+    }
+
+    [Flags]
+    public enum ProcessAccessFlags : uint {
+        All = 0x001F0FFF,
+        Terminate = 0x00000001,
+        CreateThread = 0x00000002,
+        VirtualMemoryOperation = 0x00000008,
+        VirtualMemoryRead = 0x00000010,
+        VirtualMemoryWrite = 0x00000020,
+        DuplicateHandle = 0x00000040,
+        CreateProcess = 0x000000080,
+        SetQuota = 0x00000100,
+        SetInformation = 0x00000200,
+        QueryInformation = 0x00000400,
+        QueryLimitedInformation = 0x00001000,
+        Synchronize = 0x00100000
     }
 }
