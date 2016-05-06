@@ -193,8 +193,10 @@ namespace VirtualDesktopGridSwitcher {
             using (RegistryKey userChoiceKey = Registry.CurrentUser.OpenSubKey(userChoice)) {
                 if (userChoiceKey != null) {
                     object progIdValue = userChoiceKey.GetValue("Progid");
-                    if (progIdValue != null && settings.WebBrowserProgIDToExe.ContainsKey(progIdValue.ToString())) {
-                        if (GetWindowExeName(hwnd) == settings.WebBrowserProgIDToExe[progIdValue.ToString()]) {
+                    if (progIdValue != null) {
+                        var lookupEntry =
+                            settings.WebBrowserProgIDToExe.Where(v => v[0] == progIdValue.ToString()).FirstOrDefault();
+                        if (lookupEntry != null && GetWindowExeName(hwnd) == lookupEntry[1]) {
                             return true;
                         }
                     }
