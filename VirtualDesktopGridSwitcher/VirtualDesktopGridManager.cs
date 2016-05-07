@@ -149,7 +149,7 @@ namespace VirtualDesktopGridSwitcher {
                 var currentHwnd = GetForegroundWindow();
                 if (lastActiveBrowserWindows[Current] != currentHwnd) {
 
-                    Console.WriteLine("Activate " + lastActiveBrowserWindows[Current].ToString());
+                    //Console.WriteLine("Activate " + lastActiveBrowserWindows[Current].ToString());
                     ActivateWindow(lastActiveBrowserWindows[Current]);
                 }
                 SetForegroundWindow(currentHwnd);
@@ -172,7 +172,7 @@ namespace VirtualDesktopGridSwitcher {
             if (desktops != null)
             {
                 if (IsWindowDefaultBrowser(hwnd)) {
-                    Console.WriteLine("Browser " + desktopIdLookup[VirtualDesktop.Current] + " " + desktopIdLookup[VirtualDesktop.FromHwnd(hwnd)] + " " + hwnd);
+                    //Console.WriteLine("Browser " + desktopIdLookup[VirtualDesktop.Current] + " " + desktopIdLookup[VirtualDesktop.FromHwnd(hwnd)] + " " + hwnd);
                     lastActiveBrowserWindows[desktopIdLookup[VirtualDesktop.FromHwnd(hwnd)]] = hwnd;
                 }
             }
