@@ -144,22 +144,27 @@ namespace VirtualDesktopGridSwitcher {
         {
             this._current = desktopIdLookup[VirtualDesktop.Current];
             sysTrayProcess.ShowIconForDesktop(this._current);
-            var current = GetForegroundWindow();
-            if (lastActiveBrowserWindows[Current] != current) {
-                ActivateWindow(lastActiveBrowserWindows[Current]);
+
+            if (settings.ActivateWebBrowserOnSwitch) {
+                var currentHwnd = GetForegroundWindow();
+                if (lastActiveBrowserWindows[Current] != currentHwnd) {
+
+                    Console.WriteLine("Activate " + lastActiveBrowserWindows[Current].ToString());
+                    ActivateWindow(lastActiveBrowserWindows[Current]);
+                }
+                SetForegroundWindow(currentHwnd);
             }
-            ActivateWindow(current);
         }
 
-        private void ActivateWindow(IntPtr currentActive)
+        private void ActivateWindow(IntPtr hwnd)
         {
-            if (currentActive != IntPtr.Zero)
+            if (hwnd != IntPtr.Zero)
             {
-                var desktop = VirtualDesktop.FromHwnd(currentActive);
+                var desktop = VirtualDesktop.FromHwnd(hwnd);
                 if (desktop != null && desktopIdLookup[desktop] == this._current)
                 {
-                    SetForegroundWindow(currentActive);
-                }
+                    SetForegroundWindow(hwnd);
+                } 
             }
         }
 
@@ -167,7 +172,8 @@ namespace VirtualDesktopGridSwitcher {
             if (desktops != null)
             {
                 if (IsWindowDefaultBrowser(hwnd)) {
-                    lastActiveBrowserWindows[desktopIdLookup[VirtualDesktop.Current]] = hwnd;
+                    Console.WriteLine("Browser " + desktopIdLookup[VirtualDesktop.Current] + " " + desktopIdLookup[VirtualDesktop.FromHwnd(hwnd)] + " " + hwnd);
+                    lastActiveBrowserWindows[desktopIdLookup[VirtualDesktop.FromHwnd(hwnd)]] = hwnd;
                 }
             }
             //ReleaseModifierKeys();
