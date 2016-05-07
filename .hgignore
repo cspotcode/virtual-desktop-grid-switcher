@@ -10,3 +10,4 @@ glob:*.sdf
 glob:ipch/*
 glob:*.vcxproj.user
 glob:.git
+glob:VirtualDesktopGridSwitcher.VC.*
