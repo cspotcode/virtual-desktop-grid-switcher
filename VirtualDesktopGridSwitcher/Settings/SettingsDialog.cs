@@ -47,6 +47,8 @@ namespace VirtualDesktopGridSwitcher.Settings {
             checkBoxShiftModifierMove.Checked = settings.ShiftModifierMove;
 
             checkBoxFKeys.Checked = settings.FKeysForNumbers;
+
+            checkBoxActivateWebBrowser.Checked = settings.ActivateWebBrowserOnSwitch;
         }
 
         private bool SaveValues() {
@@ -92,6 +94,8 @@ namespace VirtualDesktopGridSwitcher.Settings {
             settings.ShiftModifierMove = checkBoxShiftModifierMove.Checked;
 
             settings.FKeysForNumbers = checkBoxFKeys.Checked;
+
+            settings.ActivateWebBrowserOnSwitch = checkBoxActivateWebBrowser.Checked;
 
             if (!settings.ApplySettings()) {
                 MessageBox.Show(this, "Failed to apply settings", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);

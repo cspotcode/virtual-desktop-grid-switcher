@@ -23,6 +23,7 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsDialog));
             this.labelRows = new System.Windows.Forms.Label();
             this.labelColumns = new System.Windows.Forms.Label();
@@ -42,6 +43,8 @@
             this.checkBoxShiftModifierMove = new System.Windows.Forms.CheckBox();
             this.checkBoxCtrlModifierMove = new System.Windows.Forms.CheckBox();
             this.labelMoveToDesktopModifiers = new System.Windows.Forms.Label();
+            this.checkBoxActivateWebBrowser = new System.Windows.Forms.CheckBox();
+            this.toolTipSettingsDialog = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // labelRows
@@ -53,6 +56,7 @@
             this.labelRows.Size = new System.Drawing.Size(48, 16);
             this.labelRows.TabIndex = 0;
             this.labelRows.Text = "Rows:";
+            this.toolTipSettingsDialog.SetToolTip(this.labelRows, "Number of rows in desktop grid");
             // 
             // labelColumns
             // 
@@ -63,16 +67,18 @@
             this.labelColumns.Size = new System.Drawing.Size(68, 16);
             this.labelColumns.TabIndex = 1;
             this.labelColumns.Text = "Columns:";
+            this.toolTipSettingsDialog.SetToolTip(this.labelColumns, "Number of columns in desktop grid");
             // 
             // checkBoxWrapAround
             // 
             this.checkBoxWrapAround.AutoSize = true;
             this.checkBoxWrapAround.Font = new System.Drawing.Font("Verdana", 9.75F);
-            this.checkBoxWrapAround.Location = new System.Drawing.Point(310, 10);
+            this.checkBoxWrapAround.Location = new System.Drawing.Point(318, 10);
             this.checkBoxWrapAround.Name = "checkBoxWrapAround";
             this.checkBoxWrapAround.Size = new System.Drawing.Size(112, 20);
             this.checkBoxWrapAround.TabIndex = 2;
             this.checkBoxWrapAround.Text = "Wrap Around";
+            this.toolTipSettingsDialog.SetToolTip(this.checkBoxWrapAround, "Switch/Move to opposite side of grid when move beyond edge");
             this.checkBoxWrapAround.UseVisualStyleBackColor = true;
             // 
             // labelKeyModifiers
@@ -84,6 +90,7 @@
             this.labelKeyModifiers.Size = new System.Drawing.Size(180, 16);
             this.labelKeyModifiers.TabIndex = 3;
             this.labelKeyModifiers.Text = "Switch Desktop Modifiers:";
+            this.toolTipSettingsDialog.SetToolTip(this.labelKeyModifiers, "Key modifier combination to use with arrow keys to switch to another desktop");
             // 
             // textBoxRows
             // 
@@ -91,6 +98,7 @@
             this.textBoxRows.Name = "textBoxRows";
             this.textBoxRows.Size = new System.Drawing.Size(49, 20);
             this.textBoxRows.TabIndex = 4;
+            this.toolTipSettingsDialog.SetToolTip(this.textBoxRows, "Number of rows in desktop grid");
             // 
             // textBoxColumns
             // 
@@ -98,6 +106,7 @@
             this.textBoxColumns.Name = "textBoxColumns";
             this.textBoxColumns.Size = new System.Drawing.Size(49, 20);
             this.textBoxColumns.TabIndex = 5;
+            this.toolTipSettingsDialog.SetToolTip(this.textBoxColumns, "Number of columns in desktop grid");
             // 
             // checkBoxCtrlModifierSwitch
             // 
@@ -108,6 +117,7 @@
             this.checkBoxCtrlModifierSwitch.Size = new System.Drawing.Size(50, 20);
             this.checkBoxCtrlModifierSwitch.TabIndex = 6;
             this.checkBoxCtrlModifierSwitch.Text = "Ctrl";
+            this.toolTipSettingsDialog.SetToolTip(this.checkBoxCtrlModifierSwitch, "Key modifier combination to use with arrow keys to switch to another desktop");
             this.checkBoxCtrlModifierSwitch.UseVisualStyleBackColor = true;
             // 
             // checkBoxShiftModifierSwitch
@@ -119,6 +129,7 @@
             this.checkBoxShiftModifierSwitch.Size = new System.Drawing.Size(58, 20);
             this.checkBoxShiftModifierSwitch.TabIndex = 7;
             this.checkBoxShiftModifierSwitch.Text = "Shift";
+            this.toolTipSettingsDialog.SetToolTip(this.checkBoxShiftModifierSwitch, "Key modifier combination to use with arrow keys to switch to another desktop");
             this.checkBoxShiftModifierSwitch.UseVisualStyleBackColor = true;
             // 
             // checkBoxAltModifierSwitch
@@ -130,6 +141,7 @@
             this.checkBoxAltModifierSwitch.Size = new System.Drawing.Size(45, 20);
             this.checkBoxAltModifierSwitch.TabIndex = 8;
             this.checkBoxAltModifierSwitch.Text = "Alt";
+            this.toolTipSettingsDialog.SetToolTip(this.checkBoxAltModifierSwitch, "Key modifier combination to use with arrow keys to switch to another desktop");
             this.checkBoxAltModifierSwitch.UseVisualStyleBackColor = true;
             // 
             // checkBoxWinModifierSwitch
@@ -141,6 +153,7 @@
             this.checkBoxWinModifierSwitch.Size = new System.Drawing.Size(51, 20);
             this.checkBoxWinModifierSwitch.TabIndex = 9;
             this.checkBoxWinModifierSwitch.Text = "Win";
+            this.toolTipSettingsDialog.SetToolTip(this.checkBoxWinModifierSwitch, "Key modifier combination to use with arrow keys to switch to another desktop");
             this.checkBoxWinModifierSwitch.UseVisualStyleBackColor = true;
             // 
             // checkBoxFKeys
@@ -152,6 +165,8 @@
             this.checkBoxFKeys.Size = new System.Drawing.Size(150, 20);
             this.checkBoxFKeys.TabIndex = 10;
             this.checkBoxFKeys.Text = "F1-12 for Numbers";
+            this.toolTipSettingsDialog.SetToolTip(this.checkBoxFKeys, "Use normal number keys or F number keys with modifiers to jump to specific deskto" +
+        "p");
             this.checkBoxFKeys.UseVisualStyleBackColor = true;
             // 
             // buttonApply
@@ -159,7 +174,7 @@
             this.buttonApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonApply.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonApply.Font = new System.Drawing.Font("Verdana", 9.75F);
-            this.buttonApply.Location = new System.Drawing.Point(270, 123);
+            this.buttonApply.Location = new System.Drawing.Point(270, 152);
             this.buttonApply.Name = "buttonApply";
             this.buttonApply.Size = new System.Drawing.Size(75, 23);
             this.buttonApply.TabIndex = 11;
@@ -172,7 +187,7 @@
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonCancel.Font = new System.Drawing.Font("Verdana", 9.75F);
-            this.buttonCancel.Location = new System.Drawing.Point(353, 123);
+            this.buttonCancel.Location = new System.Drawing.Point(353, 152);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 12;
@@ -188,6 +203,8 @@
             this.checkBoxWinModifierMove.Size = new System.Drawing.Size(51, 20);
             this.checkBoxWinModifierMove.TabIndex = 17;
             this.checkBoxWinModifierMove.Text = "Win";
+            this.toolTipSettingsDialog.SetToolTip(this.checkBoxWinModifierMove, "Key modifier combination to use with arrow keys to move a window to another deskt" +
+        "op");
             this.checkBoxWinModifierMove.UseVisualStyleBackColor = true;
             // 
             // checkBoxAltModifierMove
@@ -199,6 +216,8 @@
             this.checkBoxAltModifierMove.Size = new System.Drawing.Size(45, 20);
             this.checkBoxAltModifierMove.TabIndex = 16;
             this.checkBoxAltModifierMove.Text = "Alt";
+            this.toolTipSettingsDialog.SetToolTip(this.checkBoxAltModifierMove, "Key modifier combination to use with arrow keys to move a window to another deskt" +
+        "op");
             this.checkBoxAltModifierMove.UseVisualStyleBackColor = true;
             // 
             // checkBoxShiftModifierMove
@@ -210,6 +229,8 @@
             this.checkBoxShiftModifierMove.Size = new System.Drawing.Size(58, 20);
             this.checkBoxShiftModifierMove.TabIndex = 15;
             this.checkBoxShiftModifierMove.Text = "Shift";
+            this.toolTipSettingsDialog.SetToolTip(this.checkBoxShiftModifierMove, "Key modifier combination to use with arrow keys to move a window to another deskt" +
+        "op");
             this.checkBoxShiftModifierMove.UseVisualStyleBackColor = true;
             // 
             // checkBoxCtrlModifierMove
@@ -221,6 +242,8 @@
             this.checkBoxCtrlModifierMove.Size = new System.Drawing.Size(50, 20);
             this.checkBoxCtrlModifierMove.TabIndex = 14;
             this.checkBoxCtrlModifierMove.Text = "Ctrl";
+            this.toolTipSettingsDialog.SetToolTip(this.checkBoxCtrlModifierMove, "Key modifier combination to use with arrow keys to move a window to another deskt" +
+        "op");
             this.checkBoxCtrlModifierMove.UseVisualStyleBackColor = true;
             // 
             // labelMoveToDesktopModifiers
@@ -232,12 +255,28 @@
             this.labelMoveToDesktopModifiers.Size = new System.Drawing.Size(191, 16);
             this.labelMoveToDesktopModifiers.TabIndex = 13;
             this.labelMoveToDesktopModifiers.Text = "Move To Desktop Modifiers:";
+            this.toolTipSettingsDialog.SetToolTip(this.labelMoveToDesktopModifiers, "Key modifier combination to use with arrow keys to move a window to another deskt" +
+        "op");
+            // 
+            // checkBoxActivateWebBrowser
+            // 
+            this.checkBoxActivateWebBrowser.AutoSize = true;
+            this.checkBoxActivateWebBrowser.Font = new System.Drawing.Font("Verdana", 9.75F);
+            this.checkBoxActivateWebBrowser.Location = new System.Drawing.Point(15, 125);
+            this.checkBoxActivateWebBrowser.Name = "checkBoxActivateWebBrowser";
+            this.checkBoxActivateWebBrowser.Size = new System.Drawing.Size(203, 20);
+            this.checkBoxActivateWebBrowser.TabIndex = 18;
+            this.checkBoxActivateWebBrowser.Text = "Default Browser Activation";
+            this.toolTipSettingsDialog.SetToolTip(this.checkBoxActivateWebBrowser, "On desktop switch, last active default browser window on that desktop is activate" +
+        "d before active window so that links open in current desktop");
+            this.checkBoxActivateWebBrowser.UseVisualStyleBackColor = true;
             // 
             // SettingsDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(440, 158);
+            this.ClientSize = new System.Drawing.Size(440, 187);
+            this.Controls.Add(this.checkBoxActivateWebBrowser);
             this.Controls.Add(this.checkBoxWinModifierMove);
             this.Controls.Add(this.checkBoxAltModifierMove);
             this.Controls.Add(this.checkBoxShiftModifierMove);
@@ -284,5 +323,7 @@
         private System.Windows.Forms.CheckBox checkBoxShiftModifierMove;
         private System.Windows.Forms.CheckBox checkBoxCtrlModifierMove;
         private System.Windows.Forms.Label labelMoveToDesktopModifiers;
+        private System.Windows.Forms.CheckBox checkBoxActivateWebBrowser;
+        private System.Windows.Forms.ToolTip toolTipSettingsDialog;
     }
 }
