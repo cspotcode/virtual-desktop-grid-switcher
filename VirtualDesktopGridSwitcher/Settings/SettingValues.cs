@@ -31,10 +31,12 @@ namespace VirtualDesktopGridSwitcher.Settings {
 
         public bool FKeysForNumbers = false;
 
+        public bool ActivateWebBrowserOnSwitch = true;
+
         public List<string[]> WebBrowserProgIDToExe =
             new List<string[]> {
                 new string[] { "AppXq0fevzme2pys62n3e0fbqa7peapykr8v", "ApplicationFrameHost.exe" }, // Edge
-                new string [] { "IE.HTTP", "iexplore.exe" },
+                new string[] { "IE.HTTP", "iexplore.exe" },
                 new string[] { "ChromeHTML", "chrome.exe" },
                 new string[] { "FirefoxURL", "firefox.exe" },
                 new string[] { "OperaStable" , "opera.exe"}
