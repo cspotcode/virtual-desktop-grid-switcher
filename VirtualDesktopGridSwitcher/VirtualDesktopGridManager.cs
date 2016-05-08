@@ -420,13 +420,16 @@ namespace VirtualDesktopGridSwitcher {
         }
 
         private static void ActivateBrowserWindow(IntPtr hwnd) {
-            SetForegroundWindow(hwnd);
-            //SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWPFlags.SWP_NOMOVE | SWPFlags.SWP_NOSIZE | SWPFlags.SWP_SHOWWINDOW);
             WindowPlacement winInfo = new WindowPlacement();
             GetWindowPlacement(hwnd, ref winInfo);
-            ShowWindow(hwnd, ShowWindowCommands.Restore);
-            //System.Threading.Thread.Sleep(1000);
-            ShowWindow(hwnd, winInfo.ShowCmd);
+
+            SetForegroundWindow(hwnd);
+            //SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWPFlags.SWP_NOMOVE | SWPFlags.SWP_NOSIZE | SWPFlags.SWP_SHOWWINDOW);
+            if (winInfo.ShowCmd == ShowWindowCommands.ShowMinimized) {
+                ShowWindow(hwnd, ShowWindowCommands.Restore);
+                //System.Threading.Thread.Sleep(1000);
+                ShowWindow(hwnd, winInfo.ShowCmd);
+            }
         }
 
         void ForegroundWindowChanged(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime) {
