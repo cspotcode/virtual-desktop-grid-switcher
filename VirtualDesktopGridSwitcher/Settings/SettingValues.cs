@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -10,7 +11,7 @@ using System.Xml.Serialization;
 namespace VirtualDesktopGridSwitcher.Settings {
 
     public class SettingValues {
-        
+
         public event ApplyHandler Apply;
         public delegate bool ApplyHandler();
 
@@ -33,14 +34,42 @@ namespace VirtualDesktopGridSwitcher.Settings {
 
         public bool ActivateWebBrowserOnSwitch = true;
 
-        public List<string[]> WebBrowserProgIDToExe =
-            new List<string[]> {
-                new string[] { "AppXq0fevzme2pys62n3e0fbqa7peapykr8v", "ApplicationFrameHost.exe" }, // Edge
-                new string[] { "IE.HTTP", "iexplore.exe" },
-                new string[] { "ChromeHTML", "chrome.exe" },
-                new string[] { "FirefoxURL", "firefox.exe" },
-                new string[] { "OperaStable" , "opera.exe"}
+        public class BrowserInfo {
+            public string ProgID;
+            public string ExeName;
+            public string ClassName;
+        }
+
+        public List<BrowserInfo> BrowserInfoList =
+            new List<BrowserInfo> {
+                // Edge works without us interfering
+                //new BrowserInfo { ProgID = "AppXq0fevzme2pys62n3e0fbqa7peapykr8v", ExeName = "ApplicationFrameHost.exe", ClassName = "ApplicationFrameWindow" },
+
+                // IE doesn't work whatever you do - always uses oldest window!
+                //new BrowserInfo { ProgID = "IE.HTTP", ExeName = "iexplore.exe", ClassName = "IEFrame" },
+
+                new BrowserInfo { ProgID = "ChromeHTML", ExeName = "chrome.exe", ClassName = "Chrome_WidgetWin_1" },
+
+                new BrowserInfo { ProgID = "FirefoxURL", ExeName = "firefox.exe", ClassName = "MozillaWindowClass" },
+                
+                // Opera works without us interfering
+                //new BrowserInfo { ProgID = "OperaStable" , ExeName = "opera.exe", ClassName = "Chrome_WidgetWin_1" }
             };
+
+        public BrowserInfo GetBrowserToActivateInfo() {
+            if (ActivateWebBrowserOnSwitch) {
+                const string userChoice = @"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice";
+                using (RegistryKey userChoiceKey = Registry.CurrentUser.OpenSubKey(userChoice)) {
+                    if (userChoiceKey != null) {
+                        object progIdValue = userChoiceKey.GetValue("Progid");
+                        if (progIdValue != null) {
+                            return BrowserInfoList.Where(v => v.ProgID == progIdValue.ToString()).FirstOrDefault();
+                        }
+                    }
+                }
+            }
+            return null;
+        }
 
         private static string SettingsFileName { 
             get {
@@ -48,7 +77,6 @@ namespace VirtualDesktopGridSwitcher.Settings {
                 return Path.Combine(baseDir, "VirtualDesktopGridSwitcher.Settings");
             }
         }
-
 
         public static SettingValues Load() {
             if (!File.Exists(SettingsFileName)) {
