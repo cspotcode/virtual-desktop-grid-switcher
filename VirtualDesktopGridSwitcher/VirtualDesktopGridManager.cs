@@ -11,6 +11,7 @@ using WindowsDesktop;
 using System.IO;
 using System.Diagnostics;
 using System.Drawing;
+using System.Threading;
 
 namespace VirtualDesktopGridSwitcher {
 
@@ -432,22 +433,24 @@ namespace VirtualDesktopGridSwitcher {
             }
         }
 
+        Mutex mutex = new Mutex();
         void ForegroundWindowChanged(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime) {
-            if (desktops != null)
-            {
-                var desktopId = Current;
-                var desktop = VirtualDesktop.FromHwnd(hwnd);
-                if (desktop != null) {
-                    desktopId = desktopIdLookup[desktop];
-                }
-                Debug.WriteLine("Foreground " + Current + " " + (desktop != null ? desktopIdLookup[desktop].ToString() : "?") + " " + hwnd);
+            lock (mutex) {
+                if (desktops != null) {
+                    var desktopId = Current;
+                    var desktop = VirtualDesktop.FromHwnd(hwnd);
+                    if (desktop != null) {
+                        desktopId = desktopIdLookup[desktop];
+                    }
+                    Debug.WriteLine("Foreground " + Current + " " + (desktop != null ? desktopIdLookup[desktop].ToString() : "?") + " " + hwnd);
 
-                if (IsWindowDefaultBrowser(hwnd, settings.GetBrowserToActivateInfo())) {
-                    Debug.WriteLine("Browser " + Current + " " + desktopIdLookup[VirtualDesktop.Current] + " " + desktopId + " " + hwnd);
-                    lastActiveBrowserWindows[desktopId] = hwnd;
+                    if (IsWindowDefaultBrowser(hwnd, settings.GetBrowserToActivateInfo())) {
+                        Debug.WriteLine("Browser " + Current + " " + desktopIdLookup[VirtualDesktop.Current] + " " + desktopId + " " + hwnd);
+                        lastActiveBrowserWindows[desktopId] = hwnd;
+                    }
                 }
+                //ReleaseModifierKeys();
             }
-            //ReleaseModifierKeys();
         }
 
         private static string GetWindowExeName(IntPtr hwnd) {
@@ -555,7 +558,7 @@ namespace VirtualDesktopGridSwitcher {
                     }
                 }
                 Debug.WriteLine("Move " + hwnd + " from " + Current + " to " + index);
-                if (VirtualDesktopHelper.MoveToDesktop(hwnd, desktops[index])) {
+                if (!VirtualDesktopHelper.MoveToDesktop(hwnd, desktops[index])) {
                     this.VDMHelper.MoveWindowToDesktop(hwnd, desktops[index].Id);
                 }
             }
