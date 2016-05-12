@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace VirtualDesktopGridSwitcher.Settings {
@@ -36,17 +29,29 @@ namespace VirtualDesktopGridSwitcher.Settings {
 
             checkBoxWrapAround.Checked = settings.WrapAround;
 
-            checkBoxCtrlModifierSwitch.Checked = settings.CtrlModifierSwitch;
-            checkBoxWinModifierSwitch.Checked = settings.WinModifierSwitch;
-            checkBoxAltModifierSwitch.Checked = settings.AltModifierSwitch;
-            checkBoxShiftModifierSwitch.Checked = settings.ShiftModifierSwitch;
+            checkBoxCtrlModifierSwitch.Checked = settings.SwitchModifiers.Ctrl;
+            checkBoxWinModifierSwitch.Checked = settings.SwitchModifiers.Win;
+            checkBoxAltModifierSwitch.Checked = settings.SwitchModifiers.Alt;
+            checkBoxShiftModifierSwitch.Checked = settings.SwitchModifiers.Shift;
 
-            checkBoxCtrlModifierMove.Checked = settings.CtrlModifierMove;
-            checkBoxWinModifierMove.Checked = settings.WinModifierMove;
-            checkBoxAltModifierMove.Checked = settings.AltModifierMove;
-            checkBoxShiftModifierMove.Checked = settings.ShiftModifierMove;
+            checkBoxCtrlModifierMove.Checked = settings.MoveModifiers.Ctrl;
+            checkBoxWinModifierMove.Checked = settings.MoveModifiers.Win;
+            checkBoxAltModifierMove.Checked = settings.MoveModifiers.Alt;
+            checkBoxShiftModifierMove.Checked = settings.MoveModifiers.Shift;
 
             checkBoxFKeys.Checked = settings.FKeysForNumbers;
+
+            checkBoxCtrlModifierSticky.Checked = settings.StickyWindowHotKey.Modifiers.Ctrl;
+            checkBoxWinModifierSticky.Checked = settings.StickyWindowHotKey.Modifiers.Win;
+            checkBoxAltModifierSticky.Checked = settings.StickyWindowHotKey.Modifiers.Alt;
+            checkBoxShiftModifierSticky.Checked = settings.StickyWindowHotKey.Modifiers.Shift;
+            comboBoxKeySticky.SelectedValue = settings.StickyWindowHotKey.Key;
+
+            checkBoxCtrlModifierAlwaysOnTop.Checked = settings.AlwaysOnTopHotkey.Modifiers.Ctrl;
+            checkBoxWinModifierAlwaysOnTop.Checked = settings.AlwaysOnTopHotkey.Modifiers.Win;
+            checkBoxAltModifierAlwaysOnTop.Checked = settings.AlwaysOnTopHotkey.Modifiers.Alt;
+            checkBoxShiftModifierAlwaysOnTop.Checked = settings.AlwaysOnTopHotkey.Modifiers.Shift;
+            comboBoxAlwaysOnTopKey.SelectedValue = settings.AlwaysOnTopHotkey.Key;
 
             checkBoxActivateWebBrowser.Checked = settings.ActivateWebBrowserOnSwitch;
         }
@@ -83,17 +88,29 @@ namespace VirtualDesktopGridSwitcher.Settings {
 
             settings.WrapAround = checkBoxWrapAround.Checked;
 
-            settings.CtrlModifierSwitch = checkBoxCtrlModifierSwitch.Checked;
-            settings.WinModifierSwitch = checkBoxWinModifierSwitch.Checked;
-            settings.AltModifierSwitch = checkBoxAltModifierSwitch.Checked;
-            settings.ShiftModifierSwitch = checkBoxShiftModifierSwitch.Checked;
+            settings.SwitchModifiers.Ctrl = checkBoxCtrlModifierSwitch.Checked;
+            settings.SwitchModifiers.Win = checkBoxWinModifierSwitch.Checked;
+            settings.SwitchModifiers.Alt = checkBoxAltModifierSwitch.Checked;
+            settings.SwitchModifiers.Shift = checkBoxShiftModifierSwitch.Checked;
 
-            settings.CtrlModifierMove = checkBoxCtrlModifierMove.Checked;
-            settings.WinModifierMove = checkBoxWinModifierMove.Checked;
-            settings.AltModifierMove = checkBoxAltModifierMove.Checked;
-            settings.ShiftModifierMove = checkBoxShiftModifierMove.Checked;
+            settings.MoveModifiers.Ctrl = checkBoxCtrlModifierMove.Checked;
+            settings.MoveModifiers.Win = checkBoxWinModifierMove.Checked;
+            settings.MoveModifiers.Alt = checkBoxAltModifierMove.Checked;
+            settings.MoveModifiers.Shift = checkBoxShiftModifierMove.Checked;
 
             settings.FKeysForNumbers = checkBoxFKeys.Checked;
+
+            settings.StickyWindowHotKey.Modifiers.Ctrl = checkBoxCtrlModifierSticky.Checked;
+            settings.StickyWindowHotKey.Modifiers.Win = checkBoxWinModifierSticky.Checked;
+            settings.StickyWindowHotKey.Modifiers.Alt = checkBoxAltModifierSticky.Checked;
+            settings.StickyWindowHotKey.Modifiers.Shift = checkBoxShiftModifierSticky.Checked;
+            settings.StickyWindowHotKey.Key = (Keys)comboBoxKeySticky.SelectedValue;
+
+            settings.AlwaysOnTopHotkey.Modifiers.Ctrl = checkBoxCtrlModifierAlwaysOnTop.Checked;
+            settings.AlwaysOnTopHotkey.Modifiers.Win = checkBoxWinModifierAlwaysOnTop.Checked;
+            settings.AlwaysOnTopHotkey.Modifiers.Alt = checkBoxAltModifierAlwaysOnTop.Checked;
+            settings.AlwaysOnTopHotkey.Modifiers.Shift = checkBoxShiftModifierAlwaysOnTop.Checked;
+            settings.AlwaysOnTopHotkey.Key = (Keys)comboBoxAlwaysOnTopKey.SelectedValue;
 
             settings.ActivateWebBrowserOnSwitch = checkBoxActivateWebBrowser.Checked;
 

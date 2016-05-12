@@ -9,6 +9,20 @@ using System.Threading.Tasks;
 namespace VirtualDesktopGridSwitcher {
     public static class WinAPI {
 
+        public static IntPtr XOR(this IntPtr i1, IntPtr i2) {
+            if (IntPtr.Size == 8)
+                return new IntPtr(i1.ToInt64() ^ i2.ToInt64());
+            else
+                return new IntPtr(i1.ToInt32() ^ i2.ToInt32());
+        }
+
+        public static IntPtr AND(this IntPtr i1, IntPtr i2) {
+            if (IntPtr.Size == 8)
+                return new IntPtr(i1.ToInt64() & i2.ToInt64());
+            else
+                return new IntPtr(i1.ToInt32() & i2.ToInt32());
+        }
+
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool IsWindow(IntPtr hWnd);
@@ -39,6 +53,41 @@ namespace VirtualDesktopGridSwitcher {
 
         [DllImport("user32.dll")]
         public static extern IntPtr SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll", EntryPoint = "GetWindowLong")]
+        private static extern IntPtr GetWindowLongPtr32(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr")]
+        private static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
+
+        public const int GWL_EXSTYLE = (-20);
+        public readonly static IntPtr WS_EX_TOPMOST = new IntPtr(0x0008);
+        public readonly static IntPtr WS_EX_TOOLWINDOW = new IntPtr(0x80);
+
+        // This static method is required because Win32 does not support
+        // GetWindowLongPtr directly
+        public static IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex) {
+            if (IntPtr.Size == 8)
+                return GetWindowLongPtr64(hWnd, nIndex);
+            else
+                return GetWindowLongPtr32(hWnd, nIndex);
+        }
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
+        private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr")]
+        private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+
+        // This helper static method is required because the 32-bit version of user32.dll does not contain this API
+        // (on any versions of Windows), so linking the method will fail at run-time. The bridge dispatches the request
+        // to the correct function (GetWindowLong in 32-bit mode and GetWindowLongPtr in 64-bit mode)
+        public static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong) {
+            if (IntPtr.Size == 8)
+                return SetWindowLongPtr64(hWnd, nIndex, dwNewLong);
+            else
+                return new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong.ToInt32()));
+        }
 
         public static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
         public static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
