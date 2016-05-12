@@ -6,39 +6,120 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Xml.Serialization;
 
 namespace VirtualDesktopGridSwitcher.Settings {
 
     public class SettingValues {
 
-        public event ApplyHandler Apply;
-        public delegate bool ApplyHandler();
+        public class Modifiers {
+            public bool Ctrl;
+            public bool Win;
+            public bool Alt;
+            public bool Shift;
+        }
 
-        public int Columns = 3;
-        public int Rows = 3;
-
-        public bool WrapAround = false;
-
-        public bool CtrlModifierSwitch = true;
-        public bool WinModifierSwitch = false;
-        public bool AltModifierSwitch = true;
-        public bool ShiftModifierSwitch = false;
-
-        public bool CtrlModifierMove = true;
-        public bool WinModifierMove = false;
-        public bool AltModifierMove = true;
-        public bool ShiftModifierMove = true;
-
-        public bool FKeysForNumbers = false;
-
-        public bool ActivateWebBrowserOnSwitch = true;
+        public class Hotkey {
+            public Keys Key;
+            public Modifiers Modifiers;
+        }
 
         public class BrowserInfo {
             public string ProgID;
             public string ExeName;
             public string ClassName;
         }
+
+        public int Columns = 3;
+        public int Rows = 3;
+
+        public bool WrapAround = false;
+
+        public Modifiers SwitchModifiers = 
+            new Modifiers {
+//                Ctrl = true, Win = false, Alt = true, Shift = false
+                Ctrl = true, Win = true, Alt = true, Shift = true
+            };
+
+        // To support old XML format
+        /// <summary>
+        /// OBSOLETE
+        /// </summary>
+        public bool CtrlModifierSwitch {
+            set { SwitchModifiers.Ctrl = value; }
+            private get { return SwitchModifiers.Ctrl; }
+        }
+        /// <summary>
+        /// OBSOLETE
+        /// </summary>
+        public bool WinModifierSwitch {
+            set { SwitchModifiers.Win = value; }
+        }
+        /// <summary>
+        /// OBSOLETE
+        /// </summary>
+        public bool AltModifierSwitch {
+            set { SwitchModifiers.Alt = value; }
+        }
+        /// <summary>
+        /// OBSOLETE
+        /// </summary>
+        public bool ShiftModifierSwitch {
+            set { SwitchModifiers.Shift = value; }
+        }
+
+        public Modifiers MoveModifiers =
+            new Modifiers {
+                Ctrl = true, Win = false, Alt = true, Shift = true
+            };
+
+        // To support old XML format
+        /// <summary>
+        /// OBSOLETE
+        /// </summary>
+        public bool CtrlModifierMove {
+            set { MoveModifiers.Ctrl = value; }
+        }
+        /// <summary>
+        /// OBSOLETE
+        /// </summary>
+        public bool WinModifierMove {
+            set { MoveModifiers.Win = value; }
+        }
+        /// <summary>
+        /// OBSOLETE
+        /// </summary>
+        public bool AltModifierMove {
+            set { MoveModifiers.Alt = value; }
+        }
+        /// <summary>
+        /// OBSOLETE
+        /// </summary>
+        public bool ShiftModifierMove {
+            set { MoveModifiers.Shift = value; }
+        }
+
+        public bool FKeysForNumbers = false;
+
+        public Hotkey StickyWindowHotKey =
+            new Hotkey {
+                Key = Keys.Space,
+                Modifiers = new Modifiers {
+                    Ctrl = true, Win = false, Alt = true, Shift = true
+                }
+            };
+
+
+        public Hotkey AlwaysOnTopHotkey =
+            new Hotkey {
+                Key = Keys.Space,
+                Modifiers = new Modifiers {
+                    Ctrl = true, Win = false, Alt = true, Shift = false
+                }
+            };
+
+        public bool ActivateWebBrowserOnSwitch = true;
 
         public List<BrowserInfo> BrowserInfoList =
             new List<BrowserInfo> {
@@ -55,21 +136,6 @@ namespace VirtualDesktopGridSwitcher.Settings {
                 // Opera works without us interfering
                 //new BrowserInfo { ProgID = "OperaStable" , ExeName = "opera.exe", ClassName = "Chrome_WidgetWin_1" }
             };
-
-        public BrowserInfo GetBrowserToActivateInfo() {
-            if (ActivateWebBrowserOnSwitch) {
-                const string userChoice = @"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice";
-                using (RegistryKey userChoiceKey = Registry.CurrentUser.OpenSubKey(userChoice)) {
-                    if (userChoiceKey != null) {
-                        object progIdValue = userChoiceKey.GetValue("Progid");
-                        if (progIdValue != null) {
-                            return BrowserInfoList.Where(v => v.ProgID == progIdValue.ToString()).FirstOrDefault();
-                        }
-                    }
-                }
-            }
-            return null;
-        }
 
         private static string SettingsFileName { 
             get {
@@ -103,11 +169,29 @@ namespace VirtualDesktopGridSwitcher.Settings {
             return true;
         }
 
+        public event ApplyHandler Apply;
+        public delegate bool ApplyHandler();
+
         public bool ApplySettings() {
             if (this.Apply != null) {
                 return this.Apply();
             }
             return true;
+        }
+
+        public BrowserInfo GetBrowserToActivateInfo() {
+            if (ActivateWebBrowserOnSwitch) {
+                const string userChoice = @"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice";
+                using (RegistryKey userChoiceKey = Registry.CurrentUser.OpenSubKey(userChoice)) {
+                    if (userChoiceKey != null) {
+                        object progIdValue = userChoiceKey.GetValue("Progid");
+                        if (progIdValue != null) {
+                            return BrowserInfoList.Where(v => v.ProgID == progIdValue.ToString()).FirstOrDefault();
+                        }
+                    }
+                }
+            }
+            return null;
         }
     }
 }

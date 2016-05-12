@@ -238,6 +238,22 @@ namespace VirtualDesktopGridSwitcher {
             return (browserInfo != null && GetWindowExeName(hwnd) == browserInfo.ExeName);
         }
 
+        private void ToggleWindowSticky(IntPtr hwnd) {
+            SetWindowLongPtr(hwnd, GWL_EXSTYLE,
+              GetWindowLongPtr(hwnd, GWL_EXSTYLE).XOR(WS_EX_TOOLWINDOW));
+        }
+
+        private static bool IsWindowTopMost(IntPtr hWnd) {
+            return GetWindowLongPtr(hWnd, GWL_EXSTYLE).AND(WS_EX_TOPMOST) == WS_EX_TOPMOST;
+        }
+
+        private void ToggleWindowAlwaysOnTop(IntPtr hwnd) {
+            SetWindowPos(hwnd,
+              IsWindowTopMost(hwnd) ? HWND_NOTOPMOST : HWND_TOPMOST,
+              0, 0, 0, 0,
+              SWPFlags.SWP_SHOWWINDOW | SWPFlags.SWP_NOSIZE | SWPFlags.SWP_NOMOVE);
+        }
+
         private int _current;
         public int Current {
             get {
@@ -326,10 +342,11 @@ namespace VirtualDesktopGridSwitcher {
                     }
                 }
                 Debug.WriteLine("Move " + hwnd + " from " + Current + " to " + index);
-                if (VirtualDesktopHelper.MoveToDesktop(hwnd, desktops[index])) {
+                if (!VirtualDesktopHelper.MoveToDesktop(hwnd, desktops[index])) {
                     this.VDMHelper.MoveWindowToDesktop(hwnd, desktops[index].Id);
                 }
             }
+            SetForegroundWindow(hwnd);
             Current = index;
         }
 
@@ -367,14 +384,16 @@ namespace VirtualDesktopGridSwitcher {
                 RegisterMoveHotkey(keycode, delegate { this.Move(desktopIndex); });
             }
 
+            RegisterToggleStickyHotKey();
+            RegisterToggleAlwaysOnTopHotKey();
         }
 
         private void RegisterSwitchHotkey(Keys keycode, Action action) {
             Hotkey hk = new Hotkey() {
-                Control = settings.CtrlModifierSwitch,
-                Windows = settings.WinModifierSwitch,
-                Alt = settings.AltModifierSwitch,
-                Shift = settings.ShiftModifierSwitch,
+                Control = settings.SwitchModifiers.Ctrl,
+                Windows = settings.SwitchModifiers.Win,
+                Alt = settings.SwitchModifiers.Alt,
+                Shift = settings.SwitchModifiers.Shift,
                 KeyCode = keycode
             };
             hk.Pressed += delegate { action(); };
@@ -392,10 +411,10 @@ namespace VirtualDesktopGridSwitcher {
         {
             Hotkey hk = new Hotkey()
             {
-                Control = settings.CtrlModifierMove,
-                Windows = settings.WinModifierMove,
-                Alt = settings.AltModifierMove,
-                Shift = settings.ShiftModifierMove,
+                Control = settings.MoveModifiers.Ctrl,
+                Windows = settings.MoveModifiers.Win,
+                Alt = settings.MoveModifiers.Alt,
+                Shift = settings.MoveModifiers.Shift,
                 KeyCode = keycode
             };
             hk.Pressed += delegate { action(); };
@@ -406,6 +425,44 @@ namespace VirtualDesktopGridSwitcher {
             else
             {
                 MessageBox.Show("Failed to register move window hotkey for " + hk.KeyCode,
+                                "Warning",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
+            }
+        }
+
+        private void RegisterToggleStickyHotKey() {
+            Hotkey hk = new Hotkey() {
+                Control = settings.StickyWindowHotKey.Modifiers.Ctrl,
+                Windows = settings.StickyWindowHotKey.Modifiers.Win,
+                Alt = settings.StickyWindowHotKey.Modifiers.Alt,
+                Shift = settings.StickyWindowHotKey.Modifiers.Shift,
+                KeyCode = settings.StickyWindowHotKey.Key
+            };
+            hk.Pressed += delegate { ToggleWindowSticky(GetForegroundWindow()); };
+            if (hk.Register(null)) {
+                hotkeys.Add(hk);
+            } else {
+                MessageBox.Show("Failed to register toggle sticky window hotkey for " + hk.KeyCode,
+                                "Warning",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
+            }
+        }
+
+        private void RegisterToggleAlwaysOnTopHotKey() {
+            Hotkey hk = new Hotkey() {
+                Control = settings.AlwaysOnTopHotkey.Modifiers.Ctrl,
+                Windows = settings.AlwaysOnTopHotkey.Modifiers.Win,
+                Alt = settings.AlwaysOnTopHotkey.Modifiers.Alt,
+                Shift = settings.AlwaysOnTopHotkey.Modifiers.Shift,
+                KeyCode = settings.AlwaysOnTopHotkey.Key
+            };
+            hk.Pressed += delegate { ToggleWindowAlwaysOnTop(GetForegroundWindow()); };
+            if (hk.Register(null)) {
+                hotkeys.Add(hk);
+            } else {
+                MessageBox.Show("Failed to register toggle window always on top hotkey for " + hk.KeyCode,
                                 "Warning",
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Warning);
