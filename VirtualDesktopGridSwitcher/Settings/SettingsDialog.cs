@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace VirtualDesktopGridSwitcher.Settings {
@@ -11,6 +13,12 @@ namespace VirtualDesktopGridSwitcher.Settings {
             this.settings = settings;
 
             InitializeComponent();
+
+            List<Keys> stickyKeyValues = Enum.GetValues(typeof(Keys)).Cast<Keys>().Where(v => v > 0).ToList();
+            comboBoxKeySticky.DataSource = stickyKeyValues;
+
+            List<Keys> alwaysOnTopKeyValues = Enum.GetValues(typeof(Keys)).Cast<Keys>().Where(v => v > 0).ToList();
+            comboBoxAlwaysOnTopKey.DataSource = alwaysOnTopKeyValues;
 
             LoadValues();
         }
@@ -45,13 +53,13 @@ namespace VirtualDesktopGridSwitcher.Settings {
             checkBoxWinModifierSticky.Checked = settings.StickyWindowHotKey.Modifiers.Win;
             checkBoxAltModifierSticky.Checked = settings.StickyWindowHotKey.Modifiers.Alt;
             checkBoxShiftModifierSticky.Checked = settings.StickyWindowHotKey.Modifiers.Shift;
-            comboBoxKeySticky.SelectedValue = settings.StickyWindowHotKey.Key;
+            comboBoxKeySticky.SelectedItem = settings.StickyWindowHotKey.Key;
 
             checkBoxCtrlModifierAlwaysOnTop.Checked = settings.AlwaysOnTopHotkey.Modifiers.Ctrl;
             checkBoxWinModifierAlwaysOnTop.Checked = settings.AlwaysOnTopHotkey.Modifiers.Win;
             checkBoxAltModifierAlwaysOnTop.Checked = settings.AlwaysOnTopHotkey.Modifiers.Alt;
             checkBoxShiftModifierAlwaysOnTop.Checked = settings.AlwaysOnTopHotkey.Modifiers.Shift;
-            comboBoxAlwaysOnTopKey.SelectedValue = settings.AlwaysOnTopHotkey.Key;
+            comboBoxAlwaysOnTopKey.SelectedItem = settings.AlwaysOnTopHotkey.Key;
 
             checkBoxActivateWebBrowser.Checked = settings.ActivateWebBrowserOnSwitch;
         }
@@ -104,13 +112,13 @@ namespace VirtualDesktopGridSwitcher.Settings {
             settings.StickyWindowHotKey.Modifiers.Win = checkBoxWinModifierSticky.Checked;
             settings.StickyWindowHotKey.Modifiers.Alt = checkBoxAltModifierSticky.Checked;
             settings.StickyWindowHotKey.Modifiers.Shift = checkBoxShiftModifierSticky.Checked;
-            settings.StickyWindowHotKey.Key = (Keys)comboBoxKeySticky.SelectedValue;
+            settings.StickyWindowHotKey.Key = (Keys)comboBoxKeySticky.SelectedItem;
 
             settings.AlwaysOnTopHotkey.Modifiers.Ctrl = checkBoxCtrlModifierAlwaysOnTop.Checked;
             settings.AlwaysOnTopHotkey.Modifiers.Win = checkBoxWinModifierAlwaysOnTop.Checked;
             settings.AlwaysOnTopHotkey.Modifiers.Alt = checkBoxAltModifierAlwaysOnTop.Checked;
             settings.AlwaysOnTopHotkey.Modifiers.Shift = checkBoxShiftModifierAlwaysOnTop.Checked;
-            settings.AlwaysOnTopHotkey.Key = (Keys)comboBoxAlwaysOnTopKey.SelectedValue;
+            settings.AlwaysOnTopHotkey.Key = (Keys)comboBoxAlwaysOnTopKey.SelectedItem;
 
             settings.ActivateWebBrowserOnSwitch = checkBoxActivateWebBrowser.Checked;
 
