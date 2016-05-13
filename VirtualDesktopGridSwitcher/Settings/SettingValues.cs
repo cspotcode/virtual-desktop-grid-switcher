@@ -1,12 +1,10 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 
 namespace VirtualDesktopGridSwitcher.Settings {
@@ -38,78 +36,16 @@ namespace VirtualDesktopGridSwitcher.Settings {
 
         public Modifiers SwitchModifiers = 
             new Modifiers {
-//                Ctrl = true, Win = false, Alt = true, Shift = false
-                Ctrl = true, Win = true, Alt = true, Shift = true
+                Ctrl = true, Win = false, Alt = true, Shift = false
             };
 
-        // To support old XML format
-        /// <summary>
-        /// OBSOLETE
-        /// </summary>
-        public bool CtrlModifierSwitch {
-            set { SwitchModifiers.Ctrl = value; }
-            private get { return SwitchModifiers.Ctrl; }
-        }
-        /// <summary>
-        /// OBSOLETE
-        /// </summary>
-        public bool WinModifierSwitch {
-            set { SwitchModifiers.Win = value; }
-        }
-        /// <summary>
-        /// OBSOLETE
-        /// </summary>
-        public bool AltModifierSwitch {
-            set { SwitchModifiers.Alt = value; }
-        }
-        /// <summary>
-        /// OBSOLETE
-        /// </summary>
-        public bool ShiftModifierSwitch {
-            set { SwitchModifiers.Shift = value; }
-        }
-
+        
         public Modifiers MoveModifiers =
             new Modifiers {
                 Ctrl = true, Win = false, Alt = true, Shift = true
             };
-
-        // To support old XML format
-        /// <summary>
-        /// OBSOLETE
-        /// </summary>
-        public bool CtrlModifierMove {
-            set { MoveModifiers.Ctrl = value; }
-        }
-        /// <summary>
-        /// OBSOLETE
-        /// </summary>
-        public bool WinModifierMove {
-            set { MoveModifiers.Win = value; }
-        }
-        /// <summary>
-        /// OBSOLETE
-        /// </summary>
-        public bool AltModifierMove {
-            set { MoveModifiers.Alt = value; }
-        }
-        /// <summary>
-        /// OBSOLETE
-        /// </summary>
-        public bool ShiftModifierMove {
-            set { MoveModifiers.Shift = value; }
-        }
-
+        
         public bool FKeysForNumbers = false;
-
-        public Hotkey StickyWindowHotKey =
-            new Hotkey {
-                Key = Keys.Space,
-                Modifiers = new Modifiers {
-                    Ctrl = true, Win = false, Alt = true, Shift = true
-                }
-            };
-
 
         public Hotkey AlwaysOnTopHotkey =
             new Hotkey {
@@ -119,23 +55,17 @@ namespace VirtualDesktopGridSwitcher.Settings {
                 }
             };
 
+        public Hotkey StickyWindowHotKey =
+            new Hotkey {
+                Key = Keys.Space,
+                Modifiers = new Modifiers {
+                    Ctrl = true, Win = false, Alt = true, Shift = true
+                }
+            };
+
         public bool ActivateWebBrowserOnSwitch = true;
 
-        public List<BrowserInfo> BrowserInfoList =
-            new List<BrowserInfo> {
-                // Edge works without us interfering
-                //new BrowserInfo { ProgID = "AppXq0fevzme2pys62n3e0fbqa7peapykr8v", ExeName = "ApplicationFrameHost.exe", ClassName = "ApplicationFrameWindow" },
-
-                // IE doesn't work whatever you do - always uses oldest window!
-                //new BrowserInfo { ProgID = "IE.HTTP", ExeName = "iexplore.exe", ClassName = "IEFrame" },
-
-                new BrowserInfo { ProgID = "ChromeHTML", ExeName = "chrome.exe", ClassName = "Chrome_WidgetWin_1" },
-
-                new BrowserInfo { ProgID = "FirefoxURL", ExeName = "firefox.exe", ClassName = "MozillaWindowClass" },
-                
-                // Opera works without us interfering
-                //new BrowserInfo { ProgID = "OperaStable" , ExeName = "opera.exe", ClassName = "Chrome_WidgetWin_1" }
-            };
+        public List<BrowserInfo> BrowserInfoList;
 
         private static string SettingsFileName { 
             get {
@@ -146,12 +76,66 @@ namespace VirtualDesktopGridSwitcher.Settings {
 
         public static SettingValues Load() {
             if (!File.Exists(SettingsFileName)) {
-                return new SettingValues();
+                var settings = new SettingValues();
+                settings.BrowserInfoList =
+                    new List<BrowserInfo> {
+                        // Edge works without us interfering
+                        //new BrowserInfo { ProgID = "AppXq0fevzme2pys62n3e0fbqa7peapykr8v", ExeName = "ApplicationFrameHost.exe", ClassName = "ApplicationFrameWindow" },
+
+                        // IE doesn't work whatever you do - always uses oldest window!
+                        //new BrowserInfo { ProgID = "IE.HTTP", ExeName = "iexplore.exe", ClassName = "IEFrame" },
+
+                        new BrowserInfo { ProgID = "ChromeHTML", ExeName = "chrome.exe", ClassName = "Chrome_WidgetWin_1" },
+
+                        new BrowserInfo { ProgID = "FirefoxURL", ExeName = "firefox.exe", ClassName = "MozillaWindowClass" }
+
+                        // Opera works without us interfering
+                        //new BrowserInfo { ProgID = "OperaStable" , ExeName = "opera.exe", ClassName = "Chrome_WidgetWin_1" }
+                    };
+                return settings;
             } else {
                 XmlSerializer serializer = new XmlSerializer(typeof(SettingValues));
                 FileStream fs = new FileStream(SettingsFileName, FileMode.Open);
                 var settings = (SettingValues)serializer.Deserialize(fs);
                 fs.Close();
+
+                // Backward compatibility
+                XDocument xdoc = XDocument.Load(SettingsFileName);
+
+                var switchCtrl = xdoc.Element("SettingValues").Element("CtrlModifierSwitch");
+                if (switchCtrl != null) {
+                    settings.SwitchModifiers.Ctrl = (bool)switchCtrl;
+                }
+                var switchWin = xdoc.Element("SettingValues").Element("WinModifierSwitch");
+                if (switchWin != null) {
+                    settings.SwitchModifiers.Win = (bool)switchWin;
+                }
+                var switchAlt = xdoc.Element("SettingValues").Element("AltModifierSwitch");
+                if (switchAlt != null) {
+                    settings.SwitchModifiers.Alt = (bool)switchAlt;
+                }
+                var switchShift = xdoc.Element("SettingValues").Element("ShiftModifierSwitch");
+                if (switchShift != null) {
+                    settings.SwitchModifiers.Shift = (bool)switchShift;
+                }
+
+                var moveCtrl = xdoc.Element("SettingValues").Element("CtrlModifierMove");
+                if (moveCtrl != null) {
+                    settings.MoveModifiers.Ctrl = (bool)moveCtrl;
+                }
+                var moveWin = xdoc.Element("SettingValues").Element("WinModifierMove");
+                if (moveWin != null) {
+                    settings.MoveModifiers.Win = (bool)moveWin;
+                }
+                var moveAlt = xdoc.Element("SettingValues").Element("AltModifierMove");
+                if (moveAlt != null) {
+                    settings.MoveModifiers.Alt = (bool)moveAlt;
+                }
+                var moveShift = xdoc.Element("SettingValues").Element("ShiftModifierMove");
+                if (moveShift != null) {
+                    settings.MoveModifiers.Shift = (bool)moveShift;
+                }
+
                 return settings;
             }
         }
