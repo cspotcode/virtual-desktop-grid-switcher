@@ -270,7 +270,7 @@ namespace VirtualDesktopGridSwitcher {
         [DllImport("kernel32.dll")]
         public static extern IntPtr OpenProcess(ProcessAccessFlags processAccess, bool bInheritHandle, int processId);
 
-        [DllImport("psapi.dll")]
+        [DllImport("psapi.dll", SetLastError = true)]
         public static extern uint GetProcessImageFileName(IntPtr hProcess, [Out] StringBuilder lpImageFileName, [In] [MarshalAs(UnmanagedType.U4)] int nSize);
 
         [DllImport("user32.dll")]

@@ -226,9 +226,16 @@ namespace VirtualDesktopGridSwitcher {
             GetWindowThreadProcessId(hwnd, out pid);
 
             IntPtr pic = OpenProcess(ProcessAccessFlags.All, true, (int)pid);
+            if (pic == IntPtr.Zero) {
+                return null;
+            }
 
             StringBuilder exeDevicePath = new StringBuilder(1024);
             GetProcessImageFileName(pic, exeDevicePath, exeDevicePath.Capacity);
+            var err = Marshal.GetLastWin32Error();
+            if (err != 0) {
+                return null;
+            }
             var exeName = Path.GetFileName(exeDevicePath.ToString());
 
             return exeName;
