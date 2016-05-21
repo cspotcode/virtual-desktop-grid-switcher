@@ -123,13 +123,17 @@ namespace VirtualDesktopGridSwitcher {
                 this._current = newDesktop;
                 sysTrayProcess.ShowIconForDesktop(this._current);
 
+                var fgHwnd = WinAPI.GetForegroundWindow();
                 var browserInfo = settings.GetBrowserToActivateInfo();
                 if (browserInfo != null) {
                     if (lastActiveBrowserWindows[Current] != activeWindows[newDesktop]) {
                         FindActivateBrowserWindow(lastActiveBrowserWindows[Current], browserInfo);
                     }
                 }
-                ActivateWindow(activeWindows[newDesktop]);
+                if (!ActivateWindow(activeWindows[newDesktop])) {
+                    Debug.WriteLine("Reactivate " + Current + " " + fgHwnd);
+                    WinAPI.SetForegroundWindow(fgHwnd);
+                }
             }
         }
 
@@ -203,6 +207,18 @@ namespace VirtualDesktopGridSwitcher {
             }
         }
 
+        private bool ActivateWindow(IntPtr hwnd) {
+            if (hwnd != IntPtr.Zero) {
+                var desktop = VirtualDesktop.FromHwnd(hwnd);
+                if (desktop != null && desktopIdLookup[desktop] == this._current) {
+                    Debug.WriteLine("Activate " + Current + " " + hwnd);
+                    WinAPI.SetForegroundWindow(hwnd);
+                    return true;
+                }
+            }
+            return false;
+        }
+
         void ForegroundWindowChanged(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime) {
             if (desktops != null)
             {
@@ -210,6 +226,7 @@ namespace VirtualDesktopGridSwitcher {
                 var desktop = VirtualDesktop.FromHwnd(hwnd);
                 if (desktop != null) {
                     desktopId = desktopIdLookup[desktop];
+                    activeWindows[desktopId] = hwnd;
                 }
 
 #if DEBUG
@@ -217,8 +234,6 @@ namespace VirtualDesktopGridSwitcher {
                 WinAPI.GetWindowText(hwnd, title, title.Capacity);
                 Debug.WriteLine("Foreground " + Current + " " + (desktop != null ? desktopIdLookup[desktop].ToString() : "?") + " " + hwnd + " " + title.ToString());
 #endif
-
-                activeWindows[desktopId] = hwnd;
 
                 if (IsWindowDefaultBrowser(hwnd, settings.GetBrowserToActivateInfo())) {
                     Debug.WriteLine("Browser " + Current + " " + desktopIdLookup[VirtualDesktop.Current] + " " + desktopId + " " + hwnd);
@@ -366,7 +381,7 @@ namespace VirtualDesktopGridSwitcher {
             }
             SetForegroundWindow(hwnd);
             Current = index;
-            activeWindows[index] = window;
+            activeWindows[index] = hwnd;
         }
 
         private int ColumnOf(int index) {
