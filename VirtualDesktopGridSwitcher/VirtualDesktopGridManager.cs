@@ -23,6 +23,7 @@ namespace VirtualDesktopGridSwitcher {
 
         private Dictionary<VirtualDesktop, int> desktopIdLookup;
         private VirtualDesktop[] desktops;
+        private IntPtr[] activeWindows;
         private IntPtr[] lastActiveBrowserWindows;
 
         [DllImport("user32.dll")]
@@ -99,6 +100,7 @@ namespace VirtualDesktopGridSwitcher {
 
                 this._current = desktopIdLookup[VirtualDesktop.Current];
 
+                activeWindows = new IntPtr[desktops.Length];
                 lastActiveBrowserWindows = new IntPtr[desktops.Length];
 
                 VirtualDesktop.CurrentChanged += VirtualDesktop_CurrentChanged;
@@ -124,6 +126,7 @@ namespace VirtualDesktopGridSwitcher {
                 VirtualDesktop.CurrentChanged -= VirtualDesktop_CurrentChanged;
                 desktops = null;
                 desktopIdLookup = null;
+                activeWindows = null;
                 lastActiveBrowserWindows = null;
             }
         }
@@ -144,11 +147,8 @@ namespace VirtualDesktopGridSwitcher {
         {
             this._current = desktopIdLookup[VirtualDesktop.Current];
             sysTrayProcess.ShowIconForDesktop(this._current);
-            var current = GetForegroundWindow();
-            if (lastActiveBrowserWindows[Current] != current) {
-                ActivateWindow(lastActiveBrowserWindows[Current]);
-            }
-            ActivateWindow(current);
+            ActivateWindow(lastActiveBrowserWindows[Current]);
+            ActivateWindow(activeWindows[Current]);
         }
 
         private void ActivateWindow(IntPtr currentActive)
@@ -166,6 +166,8 @@ namespace VirtualDesktopGridSwitcher {
         void ForegroundWindowChanged(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime) {
             if (desktops != null)
             {
+                activeWindows[desktopIdLookup[VirtualDesktop.Current]] = hwnd;
+
                 if (IsWindowDefaultBrowser(hwnd)) {
                     lastActiveBrowserWindows[desktopIdLookup[VirtualDesktop.Current]] = hwnd;
                 }
@@ -276,6 +278,7 @@ namespace VirtualDesktopGridSwitcher {
         }
 
         public void Switch(int index) {
+            activeWindows[Current] = GetForegroundWindow();
             Current = index;
         }
 
@@ -283,10 +286,14 @@ namespace VirtualDesktopGridSwitcher {
         {
             var window = GetForegroundWindow();
             this.VDMHelper.MoveWindowToDesktop(window, desktops[index].Id);
+            activeWindows[Current] = IntPtr.Zero;
             if (IsWindowDefaultBrowser(window)) {
                 lastActiveBrowserWindows[Current] = IntPtr.Zero;
             }
+            // VDMHelper sets window as foreground so avoid setting in changed event
+            activeWindows[index] = IntPtr.Zero;
             Current = index;
+            activeWindows[index] = window;
         }
 
         private int ColumnOf(int index) {
