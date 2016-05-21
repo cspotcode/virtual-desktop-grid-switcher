@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -10,7 +9,9 @@ using VDMHelperCLR.Common;
 using VirtualDesktopGridSwitcher.Settings;
 using WindowsDesktop;
 using System.IO;
-using Microsoft.Win32;
+using System.Diagnostics;
+using System.Drawing;
+using static VirtualDesktopGridSwitcher.WinAPI;
 
 namespace VirtualDesktopGridSwitcher {
 
@@ -25,36 +26,6 @@ namespace VirtualDesktopGridSwitcher {
         private VirtualDesktop[] desktops;
         private IntPtr[] activeWindows;
         private IntPtr[] lastActiveBrowserWindows;
-
-        [DllImport("user32.dll")]
-        static extern IntPtr GetForegroundWindow();
-
-        [DllImport("user32.dll")]
-        static extern IntPtr SetForegroundWindow(IntPtr hWnd);
-
-        [DllImport("user32.dll", SetLastError= true)]
-        static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
-
-        [DllImport("kernel32.dll")]
-        public static extern IntPtr OpenProcess(ProcessAccessFlags processAccess, bool bInheritHandle, int processId);
-
-        [DllImport("psapi.dll")]
-        static extern uint GetProcessImageFileName(IntPtr hProcess, [Out] StringBuilder lpImageFileName, [In] [MarshalAs(UnmanagedType.U4)] int nSize);
-
-        [DllImport("user32.dll")]
-        static extern short GetAsyncKeyState(int vKey); 
-
-        [return: MarshalAs(UnmanagedType.Bool)]
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-
-        delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
-
-        [DllImport("user32.dll")]
-        static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
-
-        private const uint WINEVENT_OUTOFCONTEXT = 0;
-        private const uint EVENT_SYSTEM_FOREGROUND = 3;
 
         private WinEventDelegate foregroundWindowChangedDelegate;
 
@@ -145,31 +116,113 @@ namespace VirtualDesktopGridSwitcher {
         
         private void VirtualDesktop_CurrentChanged(object sender, VirtualDesktopChangedEventArgs e)
         {
-            this._current = desktopIdLookup[VirtualDesktop.Current];
-            sysTrayProcess.ShowIconForDesktop(this._current);
-            ActivateWindow(lastActiveBrowserWindows[Current]);
-            ActivateWindow(activeWindows[Current]);
+            var newDesktop = desktopIdLookup[VirtualDesktop.Current];
+            Debug.WriteLine("Switched from " + Current + " to " + newDesktop);
+
+            if (this._current != newDesktop) {
+                this._current = newDesktop;
+                sysTrayProcess.ShowIconForDesktop(this._current);
+
+                var browserInfo = settings.GetBrowserToActivateInfo();
+                if (browserInfo != null) {
+                    if (lastActiveBrowserWindows[Current] != activeWindows[newDesktop]) {
+                        FindActivateBrowserWindow(lastActiveBrowserWindows[Current], browserInfo);
+                    }
+                }
+                ActivateWindow(activeWindows[newDesktop]);
+            }
         }
 
-        private void ActivateWindow(IntPtr currentActive)
-        {
-            if (currentActive != IntPtr.Zero)
-            {
-                var desktop = VirtualDesktop.FromHwnd(currentActive);
-                if (desktop != null && desktopIdLookup[desktop] == this._current)
-                {
-                    SetForegroundWindow(currentActive);
+        private class BrowserWinInfo {
+            public IntPtr last;
+            public IntPtr top;
+            public IntPtr topOnDesktop;
+        }
+
+        private bool IterateFindTopLevelBrowserOnCurrentDesktop(IntPtr hwnd, BrowserWinInfo browserWinInfo, SettingValues.BrowserInfo browserInfo) {
+            if (hwnd == IntPtr.Zero) {
+                // None left to check
+                return false;
+            }
+
+            browserWinInfo.last = hwnd;
+            if (browserWinInfo.top == IntPtr.Zero && IsWindowDefaultBrowser(hwnd, browserInfo)) {
+                browserWinInfo.top = hwnd;
+                if (VirtualDesktop.FromHwnd(hwnd) == desktops[Current]) {
+                    // Already top level so nothing to do
+                    browserWinInfo.topOnDesktop = IntPtr.Zero;
+                    return false;
                 }
+            }
+            
+            if (VirtualDesktop.FromHwnd(hwnd) == desktops[Current] && IsWindowDefaultBrowser(hwnd, browserInfo)) {
+                browserWinInfo.topOnDesktop = hwnd;
+                return false;
+            }
+            // Keep going
+            return true;
+        }
+
+        private bool FindActivateBrowserWindow(IntPtr hwnd, SettingValues.BrowserInfo browserInfo)
+        {
+            if (IsWindow(hwnd)) {
+                var desktop = VirtualDesktop.FromHwnd(hwnd);
+                if (desktop != null && desktopIdLookup[desktop] == Current) {
+                    Debug.WriteLine("Activate Known Browser " + Current + " " + hwnd);
+                    ActivateBrowserWindow(hwnd);
+                    return true;
+                }
+            }
+
+            // Our last active record was not valid so find topmost on this desktop 
+            BrowserWinInfo browserWinInfo = new BrowserWinInfo(); ;
+            bool notFinished = true;
+            do {
+                var window = FindWindowEx(IntPtr.Zero, browserWinInfo.last, browserInfo.ClassName, null);
+                notFinished = IterateFindTopLevelBrowserOnCurrentDesktop(window, browserWinInfo, browserInfo);
+            } while (notFinished);
+            if (browserWinInfo.topOnDesktop != IntPtr.Zero) {
+                Debug.WriteLine("Activate Unknown Browser " + Current + " " + browserWinInfo.topOnDesktop);
+                ActivateBrowserWindow(browserWinInfo.topOnDesktop);
+                return true;
+            }
+
+            return false;
+        }
+
+        private static void ActivateBrowserWindow(IntPtr hwnd) {
+            WindowPlacement winInfo = new WindowPlacement();
+            GetWindowPlacement(hwnd, ref winInfo);
+
+            SetForegroundWindow(hwnd);
+            //SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWPFlags.SWP_NOMOVE | SWPFlags.SWP_NOSIZE | SWPFlags.SWP_SHOWWINDOW);
+            if (winInfo.ShowCmd == ShowWindowCommands.ShowMinimized) {
+                ShowWindow(hwnd, ShowWindowCommands.Restore);
+                //System.Threading.Thread.Sleep(1000);
+                ShowWindow(hwnd, winInfo.ShowCmd);
             }
         }
 
         void ForegroundWindowChanged(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime) {
             if (desktops != null)
             {
-                activeWindows[desktopIdLookup[VirtualDesktop.Current]] = hwnd;
+                var desktopId = Current;
+                var desktop = VirtualDesktop.FromHwnd(hwnd);
+                if (desktop != null) {
+                    desktopId = desktopIdLookup[desktop];
+                }
 
-                if (IsWindowDefaultBrowser(hwnd)) {
-                    lastActiveBrowserWindows[desktopIdLookup[VirtualDesktop.Current]] = hwnd;
+#if DEBUG
+                StringBuilder title = new StringBuilder(1024);
+                WinAPI.GetWindowText(hwnd, title, title.Capacity);
+                Debug.WriteLine("Foreground " + Current + " " + (desktop != null ? desktopIdLookup[desktop].ToString() : "?") + " " + hwnd + " " + title.ToString());
+#endif
+
+                activeWindows[desktopId] = hwnd;
+
+                if (IsWindowDefaultBrowser(hwnd, settings.GetBrowserToActivateInfo())) {
+                    Debug.WriteLine("Browser " + Current + " " + desktopIdLookup[VirtualDesktop.Current] + " " + desktopId + " " + hwnd);
+                    lastActiveBrowserWindows[desktopId] = hwnd;
                 }
             }
             //ReleaseModifierKeys();
@@ -180,30 +233,39 @@ namespace VirtualDesktopGridSwitcher {
             GetWindowThreadProcessId(hwnd, out pid);
 
             IntPtr pic = OpenProcess(ProcessAccessFlags.All, true, (int)pid);
+            if (pic == IntPtr.Zero) {
+                return null;
+            }
 
             StringBuilder exeDevicePath = new StringBuilder(1024);
             GetProcessImageFileName(pic, exeDevicePath, exeDevicePath.Capacity);
+            var err = Marshal.GetLastWin32Error();
+            if (err != 0) {
+                return null;
+            }
             var exeName = Path.GetFileName(exeDevicePath.ToString());
 
             return exeName;
         }
 
-        private bool IsWindowDefaultBrowser(IntPtr hwnd) {
-            const string userChoice = @"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice";
-            using (RegistryKey userChoiceKey = Registry.CurrentUser.OpenSubKey(userChoice)) {
-                if (userChoiceKey != null) {
-                    object progIdValue = userChoiceKey.GetValue("Progid");
-                    if (progIdValue != null) {
-                        var lookupEntry =
-                            settings.WebBrowserProgIDToExe.Where(v => v[0] == progIdValue.ToString()).FirstOrDefault();
-                        if (lookupEntry != null && GetWindowExeName(hwnd) == lookupEntry[1]) {
-                            return true;
-                        }
-                    }
-                }
-            }
+        private bool IsWindowDefaultBrowser(IntPtr hwnd, SettingValues.BrowserInfo browserInfo) {
+            return (browserInfo != null && GetWindowExeName(hwnd) == browserInfo.ExeName);
+        }
 
-            return false;
+        private void ToggleWindowSticky(IntPtr hwnd) {
+            SetWindowLongPtr(hwnd, GWL_EXSTYLE,
+              GetWindowLongPtr(hwnd, GWL_EXSTYLE).XOR(WS_EX_TOOLWINDOW));
+        }
+
+        private static bool IsWindowTopMost(IntPtr hWnd) {
+            return GetWindowLongPtr(hWnd, GWL_EXSTYLE).AND(WS_EX_TOPMOST) == WS_EX_TOPMOST;
+        }
+
+        private void ToggleWindowAlwaysOnTop(IntPtr hwnd) {
+            SetWindowPos(hwnd,
+              IsWindowTopMost(hwnd) ? HWND_NOTOPMOST : HWND_TOPMOST,
+              0, 0, 0, 0,
+              SWPFlags.SWP_SHOWWINDOW | SWPFlags.SWP_NOSIZE | SWPFlags.SWP_NOMOVE);
         }
 
         private int _current;
@@ -284,14 +346,25 @@ namespace VirtualDesktopGridSwitcher {
 
         public void Move(int index)
         {
-            var window = GetForegroundWindow();
-            this.VDMHelper.MoveWindowToDesktop(window, desktops[index].Id);
-            activeWindows[Current] = IntPtr.Zero;
-            if (IsWindowDefaultBrowser(window)) {
-                lastActiveBrowserWindows[Current] = IntPtr.Zero;
+            var hwnd = GetForegroundWindow();
+            if (hwnd != IntPtr.Zero) {
+                if (IsWindowDefaultBrowser(hwnd, settings.GetBrowserToActivateInfo())) {
+                    for (int i = 0; i < lastActiveBrowserWindows.Length; ++i) {
+                        if (lastActiveBrowserWindows[i] == hwnd) {
+                            Debug.WriteLine("Browser " + i + " cleared");
+                            lastActiveBrowserWindows[i] = IntPtr.Zero;
+                        }
+                        if (activeWindows[i] == hwnd) {
+                            activeWindows[i] = IntPtr.Zero;
+                        }
+                    }
+                }
+                Debug.WriteLine("Move " + hwnd + " from " + Current + " to " + index);
+                if (!VirtualDesktopHelper.MoveToDesktop(hwnd, desktops[index])) {
+                    this.VDMHelper.MoveWindowToDesktop(hwnd, desktops[index].Id);
+                }
             }
-            // VDMHelper sets window as foreground so avoid setting in changed event
-            activeWindows[index] = IntPtr.Zero;
+            SetForegroundWindow(hwnd);
             Current = index;
             activeWindows[index] = window;
         }
@@ -330,14 +403,16 @@ namespace VirtualDesktopGridSwitcher {
                 RegisterMoveHotkey(keycode, delegate { this.Move(desktopIndex); });
             }
 
+            RegisterToggleStickyHotKey();
+            RegisterToggleAlwaysOnTopHotKey();
         }
 
         private void RegisterSwitchHotkey(Keys keycode, Action action) {
             Hotkey hk = new Hotkey() {
-                Control = settings.CtrlModifierSwitch,
-                Windows = settings.WinModifierSwitch,
-                Alt = settings.AltModifierSwitch,
-                Shift = settings.ShiftModifierSwitch,
+                Control = settings.SwitchModifiers.Ctrl,
+                Windows = settings.SwitchModifiers.Win,
+                Alt = settings.SwitchModifiers.Alt,
+                Shift = settings.SwitchModifiers.Shift,
                 KeyCode = keycode
             };
             hk.Pressed += delegate { action(); };
@@ -355,10 +430,10 @@ namespace VirtualDesktopGridSwitcher {
         {
             Hotkey hk = new Hotkey()
             {
-                Control = settings.CtrlModifierMove,
-                Windows = settings.WinModifierMove,
-                Alt = settings.AltModifierMove,
-                Shift = settings.ShiftModifierMove,
+                Control = settings.MoveModifiers.Ctrl,
+                Windows = settings.MoveModifiers.Win,
+                Alt = settings.MoveModifiers.Alt,
+                Shift = settings.MoveModifiers.Shift,
                 KeyCode = keycode
             };
             hk.Pressed += delegate { action(); };
@@ -369,6 +444,44 @@ namespace VirtualDesktopGridSwitcher {
             else
             {
                 MessageBox.Show("Failed to register move window hotkey for " + hk.KeyCode,
+                                "Warning",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
+            }
+        }
+
+        private void RegisterToggleStickyHotKey() {
+            Hotkey hk = new Hotkey() {
+                Control = settings.StickyWindowHotKey.Modifiers.Ctrl,
+                Windows = settings.StickyWindowHotKey.Modifiers.Win,
+                Alt = settings.StickyWindowHotKey.Modifiers.Alt,
+                Shift = settings.StickyWindowHotKey.Modifiers.Shift,
+                KeyCode = settings.StickyWindowHotKey.Key
+            };
+            hk.Pressed += delegate { ToggleWindowSticky(GetForegroundWindow()); };
+            if (hk.Register(null)) {
+                hotkeys.Add(hk);
+            } else {
+                MessageBox.Show("Failed to register toggle sticky window hotkey for " + hk.KeyCode,
+                                "Warning",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
+            }
+        }
+
+        private void RegisterToggleAlwaysOnTopHotKey() {
+            Hotkey hk = new Hotkey() {
+                Control = settings.AlwaysOnTopHotkey.Modifiers.Ctrl,
+                Windows = settings.AlwaysOnTopHotkey.Modifiers.Win,
+                Alt = settings.AlwaysOnTopHotkey.Modifiers.Alt,
+                Shift = settings.AlwaysOnTopHotkey.Modifiers.Shift,
+                KeyCode = settings.AlwaysOnTopHotkey.Key
+            };
+            hk.Pressed += delegate { ToggleWindowAlwaysOnTop(GetForegroundWindow()); };
+            if (hk.Register(null)) {
+                hotkeys.Add(hk);
+            } else {
+                MessageBox.Show("Failed to register toggle window always on top hotkey for " + hk.KeyCode,
                                 "Warning",
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Warning);
@@ -415,20 +528,4 @@ namespace VirtualDesktopGridSwitcher {
         }
     }
 
-    [Flags]
-    public enum ProcessAccessFlags : uint {
-        All = 0x001F0FFF,
-        Terminate = 0x00000001,
-        CreateThread = 0x00000002,
-        VirtualMemoryOperation = 0x00000008,
-        VirtualMemoryRead = 0x00000010,
-        VirtualMemoryWrite = 0x00000020,
-        DuplicateHandle = 0x00000040,
-        CreateProcess = 0x000000080,
-        SetQuota = 0x00000100,
-        SetInformation = 0x00000200,
-        QueryInformation = 0x00000400,
-        QueryLimitedInformation = 0x00001000,
-        Synchronize = 0x00100000
-    }
 }
