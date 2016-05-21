@@ -211,8 +211,12 @@ namespace VirtualDesktopGridSwitcher {
                 if (desktop != null) {
                     desktopId = desktopIdLookup[desktop];
                 }
-                Debug.WriteLine("Foreground " + Current + " " + (desktop != null ? desktopIdLookup[desktop].ToString() : "?") + " " + hwnd);
 
+#if DEBUG
+                StringBuilder title = new StringBuilder(1024);
+                WinAPI.GetWindowText(hwnd, title, title.Capacity);
+                Debug.WriteLine("Foreground " + Current + " " + (desktop != null ? desktopIdLookup[desktop].ToString() : "?") + " " + hwnd + " " + title.ToString());
+#endif
                 if (IsWindowDefaultBrowser(hwnd, settings.GetBrowserToActivateInfo())) {
                     Debug.WriteLine("Browser " + Current + " " + desktopIdLookup[VirtualDesktop.Current] + " " + desktopId + " " + hwnd);
                     lastActiveBrowserWindows[desktopId] = hwnd;
