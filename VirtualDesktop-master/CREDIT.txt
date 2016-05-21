@@ -1,0 +1,5 @@
+Virtual Desktop Library
+-----------------------
+Modifed MIT Licensed code from
+https://github.com/Grabacr07/VirtualDesktop
+by Manato KAMEYA
