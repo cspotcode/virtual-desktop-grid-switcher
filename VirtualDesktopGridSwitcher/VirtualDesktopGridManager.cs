@@ -26,6 +26,7 @@ namespace VirtualDesktopGridSwitcher {
         private VirtualDesktop[] desktops;
         private IntPtr[] activeWindows;
         private IntPtr[] lastActiveBrowserWindows;
+        private IntPtr lastMoveOnNewWindowHwnd;
         private int lastMoveOnNewWindowOpenedFromDesktop;
         private DateTime lastMoveOnNewWindowOpenedTime = DateTime.MinValue;
 
@@ -257,21 +258,28 @@ namespace VirtualDesktopGridSwitcher {
                     if (IsMoveOnNewWindowType(hwnd)) {
                         if (windowDesktopId != Current) {
                             Debug.WriteLine("Opened MoveOnNewWindow from " + Current);
+                            lastMoveOnNewWindowHwnd = hwnd;
                             lastMoveOnNewWindowOpenedFromDesktop = Current;
                             lastMoveOnNewWindowOpenedTime = DateTime.Now;
                         } else {
-                            if ((DateTime.Now - lastMoveOnNewWindowOpenedTime).TotalMilliseconds < settings.MoveOnNewWindowDetectTimeoutMs && 
+                            if ((DateTime.Now - lastMoveOnNewWindowOpenedTime).TotalMilliseconds < settings.MoveOnNewWindowDetectTimeoutMs &&
                                 lastMoveOnNewWindowOpenedFromDesktop != Current) {
 
-                                lastMoveOnNewWindowOpenedTime = DateTime.MinValue;
-                                
-                                Debug.WriteLine("Move New Window " + hwnd + " to " + lastMoveOnNewWindowOpenedFromDesktop);
-                                MoveWindow(hwnd, lastMoveOnNewWindowOpenedFromDesktop);
-                                
-                                return;
-                            }
+                                // work around browser activtation
+                                if (lastMoveOnNewWindowHwnd == hwnd) {
+                                    lastMoveOnNewWindowOpenedTime = DateTime.Now;
+                                } else {
 
-                            lastMoveOnNewWindowOpenedTime = DateTime.MinValue;
+                                    lastMoveOnNewWindowOpenedTime = DateTime.MinValue;
+
+                                    Debug.WriteLine("Move New Window " + hwnd + " to " + lastMoveOnNewWindowOpenedFromDesktop);
+                                    MoveWindow(hwnd, lastMoveOnNewWindowOpenedFromDesktop);
+
+                                    return;
+                                }
+                            } else {
+                                lastMoveOnNewWindowOpenedTime = DateTime.MinValue;
+                            }
                         }
                     }
 
