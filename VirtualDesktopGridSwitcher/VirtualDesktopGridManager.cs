@@ -197,24 +197,24 @@ namespace VirtualDesktopGridSwitcher {
         }
 
         private void ActivateBrowserWindow(IntPtr hwnd) {
-            WindowPlacement winInfo = new WindowPlacement();
-            GetWindowPlacement(hwnd, ref winInfo);
+            WinAPI.WindowPlacement winInfo = new WinAPI.WindowPlacement();
+            WinAPI.GetWindowPlacement(hwnd, ref winInfo);
 
             var prevHwnd = hwnd;
             do {
                 prevHwnd = WinAPI.GetWindow(prevHwnd, WinAPI.GWCMD.GW_HWNDPREV);
             } while (prevHwnd != IntPtr.Zero && VirtualDesktop.FromHwnd(prevHwnd) != desktops[Current]);
-            
-            SetForegroundWindow(hwnd);
-            if (winInfo.ShowCmd == ShowWindowCommands.ShowMinimized) {
-                ShowWindow(hwnd, ShowWindowCommands.Restore);
+
+            WinAPI.SetForegroundWindow(hwnd);
+            if (winInfo.ShowCmd == WinAPI.ShowWindowCommands.ShowMinimized) {
+                WinAPI.ShowWindow(hwnd, WinAPI.ShowWindowCommands.Restore);
                 //System.Threading.Thread.Sleep(1000);
                 WinAPI.ShowWindow(hwnd, winInfo.ShowCmd);
             }
 
             if (prevHwnd != IntPtr.Zero) {
                 Debug.WriteLine("Browser behind " + prevHwnd + " " + GetWindowExeName(prevHwnd) + " " + GetWindowTitle(prevHwnd));
-                SetWindowPos(hwnd, prevHwnd, 0, 0, 0, 0, WinAPI.SWPFlags.SWP_NOMOVE | WinAPI.SWPFlags.SWP_NOSIZE | WinAPI.SWPFlags.SWP_NOACTIVATE);
+                WinAPI.SetWindowPos(hwnd, prevHwnd, 0, 0, 0, 0, WinAPI.SWPFlags.SWP_NOMOVE | WinAPI.SWPFlags.SWP_NOSIZE | WinAPI.SWPFlags.SWP_NOACTIVATE);
             }
         }
 
@@ -267,7 +267,7 @@ namespace VirtualDesktopGridSwitcher {
             }
 
             StringBuilder exeDevicePath = new StringBuilder(1024);
-            if (GetProcessImageFileName(pic, exeDevicePath, exeDevicePath.Capacity) == 0) { 
+            if (WinAPI.GetProcessImageFileName(pic, exeDevicePath, exeDevicePath.Capacity) == 0) { 
                 return null;
             }
             var exeName = Path.GetFileName(exeDevicePath.ToString());
@@ -367,7 +367,7 @@ namespace VirtualDesktopGridSwitcher {
         }
 
         public void Switch(int index) {
-            activeWindows[Current] = GetForegroundWindow();
+            activeWindows[Current] = WinAPI.GetForegroundWindow();
             Debug.WriteLine("Switch Active " + Current + " " + activeWindows[Current]);
             Current = index;
         }
