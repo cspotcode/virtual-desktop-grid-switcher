@@ -10,12 +10,12 @@ namespace WindowsDesktop
 		/// <summary>
 		/// Gets which virtual desktop was destroyed.
 		/// </summary>
-        public VirtualDesktop Destroyed { get; private set; }
+		public VirtualDesktop Destroyed { get; }
 
 		/// <summary>
 		/// Gets the virtual desktop displayed after <see cref="Destroyed"/> is destroyed.
 		/// </summary>
-        public VirtualDesktop Fallback { get; private set; }
+		public VirtualDesktop Fallback { get; }
 
 		public VirtualDesktopDestroyEventArgs(VirtualDesktop destroyed, VirtualDesktop fallback)
 		{
