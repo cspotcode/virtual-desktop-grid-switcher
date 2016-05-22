@@ -65,7 +65,11 @@ namespace VirtualDesktopGridSwitcher.Settings {
 
         public bool ActivateWebBrowserOnSwitch = true;
 
-        public List<BrowserInfo> BrowserInfoList;
+        public List<BrowserInfo> BrowserInfoList = new List<BrowserInfo>();
+
+        public int MoveOnNewWindowDetectTimeoutMs = 2000;
+
+        public List<string> MoveOnNewWindowExeNames = new List<string>();
 
         private static string SettingsFileName { 
             get {
@@ -74,10 +78,9 @@ namespace VirtualDesktopGridSwitcher.Settings {
             }
         }
 
-        public static SettingValues Load() {
-            if (!File.Exists(SettingsFileName)) {
-                var settings = new SettingValues();
-                settings.BrowserInfoList =
+        private void SetListDefaults() {
+            if (BrowserInfoList.Count == 0) {
+                BrowserInfoList =
                     new List<BrowserInfo> {
                         // Edge works without us interfering
                         //new BrowserInfo { ProgID = "AppXq0fevzme2pys62n3e0fbqa7peapykr8v", ExeName = "ApplicationFrameHost.exe", ClassName = "ApplicationFrameWindow" },
@@ -92,51 +95,66 @@ namespace VirtualDesktopGridSwitcher.Settings {
                         // Opera works without us interfering
                         //new BrowserInfo { ProgID = "OperaStable" , ExeName = "opera.exe", ClassName = "Chrome_WidgetWin_1" }
                     };
-                return settings;
+            }
+
+            if (MoveOnNewWindowExeNames.Count == 0) {
+                MoveOnNewWindowExeNames = new List<string>() { "WINWORD.EXE", "EXCEL.EXE" };
+            }
+        }
+
+        public static SettingValues Load() {
+            SettingValues settings;
+            if (!File.Exists(SettingsFileName)) {
+                settings = new SettingValues();
             } else {
                 XmlSerializer serializer = new XmlSerializer(typeof(SettingValues));
                 FileStream fs = new FileStream(SettingsFileName, FileMode.Open);
-                var settings = (SettingValues)serializer.Deserialize(fs);
+                settings = (SettingValues)serializer.Deserialize(fs);
                 fs.Close();
 
-                // Backward compatibility
-                XDocument xdoc = XDocument.Load(SettingsFileName);
+                LoadOldSettings(settings);
+            }
 
-                var switchCtrl = xdoc.Element("SettingValues").Element("CtrlModifierSwitch");
-                if (switchCtrl != null) {
-                    settings.SwitchModifiers.Ctrl = (bool)switchCtrl;
-                }
-                var switchWin = xdoc.Element("SettingValues").Element("WinModifierSwitch");
-                if (switchWin != null) {
-                    settings.SwitchModifiers.Win = (bool)switchWin;
-                }
-                var switchAlt = xdoc.Element("SettingValues").Element("AltModifierSwitch");
-                if (switchAlt != null) {
-                    settings.SwitchModifiers.Alt = (bool)switchAlt;
-                }
-                var switchShift = xdoc.Element("SettingValues").Element("ShiftModifierSwitch");
-                if (switchShift != null) {
-                    settings.SwitchModifiers.Shift = (bool)switchShift;
-                }
+            settings.SetListDefaults();
+            return settings;
+        }
 
-                var moveCtrl = xdoc.Element("SettingValues").Element("CtrlModifierMove");
-                if (moveCtrl != null) {
-                    settings.MoveModifiers.Ctrl = (bool)moveCtrl;
-                }
-                var moveWin = xdoc.Element("SettingValues").Element("WinModifierMove");
-                if (moveWin != null) {
-                    settings.MoveModifiers.Win = (bool)moveWin;
-                }
-                var moveAlt = xdoc.Element("SettingValues").Element("AltModifierMove");
-                if (moveAlt != null) {
-                    settings.MoveModifiers.Alt = (bool)moveAlt;
-                }
-                var moveShift = xdoc.Element("SettingValues").Element("ShiftModifierMove");
-                if (moveShift != null) {
-                    settings.MoveModifiers.Shift = (bool)moveShift;
-                }
+        private static void LoadOldSettings(SettingValues settings) {
+            // Backward compatibility
+            XDocument xdoc = XDocument.Load(SettingsFileName);
 
-                return settings;
+            var switchCtrl = xdoc.Element("SettingValues").Element("CtrlModifierSwitch");
+            if (switchCtrl != null) {
+                settings.SwitchModifiers.Ctrl = (bool)switchCtrl;
+            }
+            var switchWin = xdoc.Element("SettingValues").Element("WinModifierSwitch");
+            if (switchWin != null) {
+                settings.SwitchModifiers.Win = (bool)switchWin;
+            }
+            var switchAlt = xdoc.Element("SettingValues").Element("AltModifierSwitch");
+            if (switchAlt != null) {
+                settings.SwitchModifiers.Alt = (bool)switchAlt;
+            }
+            var switchShift = xdoc.Element("SettingValues").Element("ShiftModifierSwitch");
+            if (switchShift != null) {
+                settings.SwitchModifiers.Shift = (bool)switchShift;
+            }
+
+            var moveCtrl = xdoc.Element("SettingValues").Element("CtrlModifierMove");
+            if (moveCtrl != null) {
+                settings.MoveModifiers.Ctrl = (bool)moveCtrl;
+            }
+            var moveWin = xdoc.Element("SettingValues").Element("WinModifierMove");
+            if (moveWin != null) {
+                settings.MoveModifiers.Win = (bool)moveWin;
+            }
+            var moveAlt = xdoc.Element("SettingValues").Element("AltModifierMove");
+            if (moveAlt != null) {
+                settings.MoveModifiers.Alt = (bool)moveAlt;
+            }
+            var moveShift = xdoc.Element("SettingValues").Element("ShiftModifierMove");
+            if (moveShift != null) {
+                settings.MoveModifiers.Shift = (bool)moveShift;
             }
         }
 
