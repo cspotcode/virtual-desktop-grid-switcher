@@ -11,7 +11,6 @@ using WindowsDesktop;
 using System.IO;
 using System.Diagnostics;
 using System.Drawing;
-using static VirtualDesktopGridSwitcher.WinAPI;
 
 namespace VirtualDesktopGridSwitcher {
 
@@ -27,7 +26,7 @@ namespace VirtualDesktopGridSwitcher {
         private IntPtr[] activeWindows;
         private IntPtr[] lastActiveBrowserWindows;
 
-        private WinEventDelegate foregroundWindowChangedDelegate;
+        private WinAPI.WinEventDelegate foregroundWindowChangedDelegate;
 
         public VirtualDesktopGridManager(SysTrayProcess sysTrayProcess, SettingValues settings)
         {
@@ -37,8 +36,8 @@ namespace VirtualDesktopGridSwitcher {
             this.VDMHelper = VdmHelperFactory.CreateInstance();
             this.VDMHelper.Init();
 
-            foregroundWindowChangedDelegate = new WinEventDelegate(ForegroundWindowChanged);
-            SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, foregroundWindowChangedDelegate, 0, 0, WINEVENT_OUTOFCONTEXT);
+            foregroundWindowChangedDelegate = new WinAPI.WinEventDelegate(ForegroundWindowChanged);
+            WinAPI.SetWinEventHook(WinAPI.EVENT_SYSTEM_FOREGROUND, WinAPI.EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, foregroundWindowChangedDelegate, 0, 0, WinAPI.WINEVENT_OUTOFCONTEXT);
 
             Start();
         }
@@ -172,7 +171,7 @@ namespace VirtualDesktopGridSwitcher {
 
         private bool FindActivateBrowserWindow(IntPtr hwnd, SettingValues.BrowserInfo browserInfo)
         {
-            if (IsWindow(hwnd)) {
+            if (WinAPI.IsWindow(hwnd)) {
                 var desktop = VirtualDesktop.FromHwnd(hwnd);
                 if (desktop != null && desktopIdLookup[desktop] == Current) {
                     Debug.WriteLine("Activate Known Browser " + Current + " " + hwnd);
@@ -185,7 +184,7 @@ namespace VirtualDesktopGridSwitcher {
             BrowserWinInfo browserWinInfo = new BrowserWinInfo(); ;
             bool notFinished = true;
             do {
-                var window = FindWindowEx(IntPtr.Zero, browserWinInfo.last, browserInfo.ClassName, null);
+                var window = WinAPI.FindWindowEx(IntPtr.Zero, browserWinInfo.last, browserInfo.ClassName, null);
                 notFinished = IterateFindTopLevelBrowserOnCurrentDesktop(window, browserWinInfo, browserInfo);
             } while (notFinished);
             if (browserWinInfo.topOnDesktop != IntPtr.Zero) {
@@ -198,24 +197,24 @@ namespace VirtualDesktopGridSwitcher {
         }
 
         private void ActivateBrowserWindow(IntPtr hwnd) {
-            WindowPlacement winInfo = new WindowPlacement();
-            GetWindowPlacement(hwnd, ref winInfo);
+            WinAPI.WindowPlacement winInfo = new WinAPI.WindowPlacement();
+            WinAPI.GetWindowPlacement(hwnd, ref winInfo);
 
             var prevHwnd = hwnd;
             do {
                 prevHwnd = WinAPI.GetWindow(prevHwnd, WinAPI.GWCMD.GW_HWNDPREV);
             } while (prevHwnd != IntPtr.Zero && VirtualDesktop.FromHwnd(prevHwnd) != desktops[Current]);
-            
-            SetForegroundWindow(hwnd);
-            if (winInfo.ShowCmd == ShowWindowCommands.ShowMinimized) {
-                ShowWindow(hwnd, ShowWindowCommands.Restore);
+
+            WinAPI.SetForegroundWindow(hwnd);
+            if (winInfo.ShowCmd == WinAPI.ShowWindowCommands.ShowMinimized) {
+                WinAPI.ShowWindow(hwnd, WinAPI.ShowWindowCommands.Restore);
                 //System.Threading.Thread.Sleep(1000);
-                ShowWindow(hwnd, winInfo.ShowCmd);
+                WinAPI.ShowWindow(hwnd, winInfo.ShowCmd);
             }
 
             if (prevHwnd != IntPtr.Zero) {
                 Debug.WriteLine("Browser behind " + prevHwnd + " " + GetWindowExeName(prevHwnd) + " " + GetWindowTitle(prevHwnd));
-                SetWindowPos(hwnd, prevHwnd, 0, 0, 0, 0, WinAPI.SWPFlags.SWP_NOMOVE | WinAPI.SWPFlags.SWP_NOSIZE | WinAPI.SWPFlags.SWP_NOACTIVATE);
+                WinAPI.SetWindowPos(hwnd, prevHwnd, 0, 0, 0, 0, WinAPI.SWPFlags.SWP_NOMOVE | WinAPI.SWPFlags.SWP_NOSIZE | WinAPI.SWPFlags.SWP_NOACTIVATE);
             }
         }
 
@@ -260,15 +259,15 @@ namespace VirtualDesktopGridSwitcher {
 
         private static string GetWindowExeName(IntPtr hwnd) {
             uint pid = 0;
-            GetWindowThreadProcessId(hwnd, out pid);
+            WinAPI.GetWindowThreadProcessId(hwnd, out pid);
 
-            IntPtr pic = OpenProcess(ProcessAccessFlags.All, true, (int)pid);
+            IntPtr pic = WinAPI.OpenProcess(WinAPI.ProcessAccessFlags.All, true, (int)pid);
             if (pic == IntPtr.Zero) {
                 return null;
             }
 
             StringBuilder exeDevicePath = new StringBuilder(1024);
-            if (GetProcessImageFileName(pic, exeDevicePath, exeDevicePath.Capacity) == 0) { 
+            if (WinAPI.GetProcessImageFileName(pic, exeDevicePath, exeDevicePath.Capacity) == 0) { 
                 return null;
             }
             var exeName = Path.GetFileName(exeDevicePath.ToString());
@@ -281,19 +280,19 @@ namespace VirtualDesktopGridSwitcher {
         }
 
         private void ToggleWindowSticky(IntPtr hwnd) {
-            SetWindowLongPtr(hwnd, GWL_EXSTYLE,
-              GetWindowLongPtr(hwnd, GWL_EXSTYLE).XOR(WS_EX_TOOLWINDOW));
+            WinAPI.SetWindowLongPtr(hwnd, WinAPI.GWL_EXSTYLE,
+              WinAPI.GetWindowLongPtr(hwnd, WinAPI.GWL_EXSTYLE).XOR(WinAPI.WS_EX_TOOLWINDOW));
         }
 
         private static bool IsWindowTopMost(IntPtr hWnd) {
-            return GetWindowLongPtr(hWnd, GWL_EXSTYLE).AND(WS_EX_TOPMOST) == WS_EX_TOPMOST;
+            return WinAPI.GetWindowLongPtr(hWnd, WinAPI.GWL_EXSTYLE).AND(WinAPI.WS_EX_TOPMOST) == WinAPI.WS_EX_TOPMOST;
         }
 
         private void ToggleWindowAlwaysOnTop(IntPtr hwnd) {
-            SetWindowPos(hwnd,
-              IsWindowTopMost(hwnd) ? HWND_NOTOPMOST : HWND_TOPMOST,
+            WinAPI.SetWindowPos(hwnd,
+              IsWindowTopMost(hwnd) ? WinAPI.HWND_NOTOPMOST : WinAPI.HWND_TOPMOST,
               0, 0, 0, 0,
-              SWPFlags.SWP_SHOWWINDOW | SWPFlags.SWP_NOSIZE | SWPFlags.SWP_NOMOVE);
+              WinAPI.SWPFlags.SWP_SHOWWINDOW | WinAPI.SWPFlags.SWP_NOSIZE | WinAPI.SWPFlags.SWP_NOMOVE);
         }
 
         private int _current;
@@ -368,14 +367,14 @@ namespace VirtualDesktopGridSwitcher {
         }
 
         public void Switch(int index) {
-            activeWindows[Current] = GetForegroundWindow();
+            activeWindows[Current] = WinAPI.GetForegroundWindow();
             Debug.WriteLine("Switch Active " + Current + " " + activeWindows[Current]);
             Current = index;
         }
 
         public void Move(int index)
         {
-            var hwnd = GetForegroundWindow();
+            var hwnd = WinAPI.GetForegroundWindow();
             if (hwnd != IntPtr.Zero) {
                 if (IsWindowDefaultBrowser(hwnd, settings.GetBrowserToActivateInfo())) {
                     for (int i = 0; i < lastActiveBrowserWindows.Length; ++i) {
@@ -393,7 +392,7 @@ namespace VirtualDesktopGridSwitcher {
                     this.VDMHelper.MoveWindowToDesktop(hwnd, desktops[index].Id);
                 }
             }
-            SetForegroundWindow(hwnd);
+            WinAPI.SetForegroundWindow(hwnd);
             Current = index;
             activeWindows[index] = hwnd;
         }
@@ -487,7 +486,7 @@ namespace VirtualDesktopGridSwitcher {
                 Shift = settings.StickyWindowHotKey.Modifiers.Shift,
                 KeyCode = settings.StickyWindowHotKey.Key
             };
-            hk.Pressed += delegate { ToggleWindowSticky(GetForegroundWindow()); };
+            hk.Pressed += delegate { ToggleWindowSticky(WinAPI.GetForegroundWindow()); };
             if (hk.Register(null)) {
                 hotkeys.Add(hk);
             } else {
@@ -506,7 +505,7 @@ namespace VirtualDesktopGridSwitcher {
                 Shift = settings.AlwaysOnTopHotkey.Modifiers.Shift,
                 KeyCode = settings.AlwaysOnTopHotkey.Key
             };
-            hk.Pressed += delegate { ToggleWindowAlwaysOnTop(GetForegroundWindow()); };
+            hk.Pressed += delegate { ToggleWindowAlwaysOnTop(WinAPI.GetForegroundWindow()); };
             if (hk.Register(null)) {
                 hotkeys.Add(hk);
             } else {
@@ -531,24 +530,24 @@ namespace VirtualDesktopGridSwitcher {
             const int VK_LWIN = 0x5B;
             const int VK_RWIN = 0x5C;
 
-            var activeHWnd = GetForegroundWindow();
-            if (IsKeyPressed(GetAsyncKeyState(VK_MENU))) {
-                PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_MENU, (IntPtr)0xC0380001);
-                PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_MENU, (IntPtr)0xC1380001);
+            var activeHWnd = WinAPI.GetForegroundWindow();
+            if (IsKeyPressed(WinAPI.GetAsyncKeyState(VK_MENU))) {
+                WinAPI.PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_MENU, (IntPtr)0xC0380001);
+                WinAPI.PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_MENU, (IntPtr)0xC1380001);
             }
-            if (IsKeyPressed(GetAsyncKeyState(VK_CONTROL))) {
-                PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_CONTROL, (IntPtr)0xC01D0001);
-                PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_CONTROL, (IntPtr)0xC11D0001);
+            if (IsKeyPressed(WinAPI.GetAsyncKeyState(VK_CONTROL))) {
+                WinAPI.PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_CONTROL, (IntPtr)0xC01D0001);
+                WinAPI.PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_CONTROL, (IntPtr)0xC11D0001);
             }
-            if (IsKeyPressed(GetAsyncKeyState(VK_SHIFT))) {
-                PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_SHIFT, (IntPtr)0xC02A0001);
-                PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_SHIFT, (IntPtr)0xC0360001);
+            if (IsKeyPressed(WinAPI.GetAsyncKeyState(VK_SHIFT))) {
+                WinAPI.PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_SHIFT, (IntPtr)0xC02A0001);
+                WinAPI.PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_SHIFT, (IntPtr)0xC0360001);
             }
-            if (IsKeyPressed(GetAsyncKeyState(VK_LWIN))) {
-                PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_LWIN, (IntPtr)0xC15B0001);
+            if (IsKeyPressed(WinAPI.GetAsyncKeyState(VK_LWIN))) {
+                WinAPI.PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_LWIN, (IntPtr)0xC15B0001);
             }
-            if (IsKeyPressed(GetAsyncKeyState(VK_RWIN))) {
-                PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_RWIN, (IntPtr)0xC15C0001);
+            if (IsKeyPressed(WinAPI.GetAsyncKeyState(VK_RWIN))) {
+                WinAPI.PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_RWIN, (IntPtr)0xC15C0001);
             }
         }
 
