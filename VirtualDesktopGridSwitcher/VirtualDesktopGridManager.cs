@@ -11,6 +11,7 @@ using WindowsDesktop;
 using System.IO;
 using System.Diagnostics;
 using System.Drawing;
+using System.Threading;
 
 namespace VirtualDesktopGridSwitcher {
 
@@ -230,25 +231,28 @@ namespace VirtualDesktopGridSwitcher {
             return false;
         }
 
+        Mutex mutex = new Mutex();
         void ForegroundWindowChanged(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime) {
-            if (desktops != null) {
+            lock (mutex) {
+                if (desktops != null) {
 
-                var desktopId = Current;
-                var desktop = VirtualDesktop.FromHwnd(hwnd);
-                if (desktop != null) {
-                    desktopId = desktopIdLookup[desktop];
-                    activeWindows[desktopId] = hwnd;
-                    Debug.WriteLine("Active " + desktopId + " " + hwnd + " " + GetWindowTitle(hwnd));
+                    var desktopId = Current;
+                    var desktop = VirtualDesktop.FromHwnd(hwnd);
+                    if (desktop != null) {
+                        desktopId = desktopIdLookup[desktop];
+                        activeWindows[desktopId] = hwnd;
+                        Debug.WriteLine("Active " + desktopId + " " + hwnd + " " + GetWindowTitle(hwnd));
+                    }
+
+                    Debug.WriteLine("Foreground " + Current + " " + (desktop != null ? desktopIdLookup[desktop].ToString() : "?") + " " + hwnd + " " + GetWindowTitle(hwnd));
+
+                    if (IsWindowDefaultBrowser(hwnd, settings.GetBrowserToActivateInfo())) {
+                        Debug.WriteLine("Browser " + Current + " " + desktopIdLookup[VirtualDesktop.Current] + " " + desktopId + " " + hwnd);
+                        lastActiveBrowserWindows[desktopId] = hwnd;
+                    }
                 }
-
-                Debug.WriteLine("Foreground " + Current + " " + (desktop != null ? desktopIdLookup[desktop].ToString() : "?") + " " + hwnd + " " + GetWindowTitle(hwnd));
-
-                if (IsWindowDefaultBrowser(hwnd, settings.GetBrowserToActivateInfo())) {
-                    Debug.WriteLine("Browser " + Current + " " + desktopIdLookup[VirtualDesktop.Current] + " " + desktopId + " " + hwnd);
-                    lastActiveBrowserWindows[desktopId] = hwnd;
-                }
+                //ReleaseModifierKeys();
             }
-            //ReleaseModifierKeys();
         }
 
         private static string GetWindowTitle(IntPtr hwnd) {
