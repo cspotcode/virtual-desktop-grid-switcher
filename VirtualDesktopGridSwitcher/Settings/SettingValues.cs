@@ -69,6 +69,7 @@ namespace VirtualDesktopGridSwitcher.Settings {
 
         public int MoveOnNewWindowDetectTimeoutMs = 2000;
 
+        [XmlArrayItem(ElementName = "ExeName")]
         public List<string> MoveOnNewWindowExeNames = new List<string>();
 
         private static string SettingsFileName { 
