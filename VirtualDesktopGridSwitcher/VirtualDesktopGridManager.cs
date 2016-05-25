@@ -214,10 +214,10 @@ namespace VirtualDesktopGridSwitcher {
             WinAPI.WindowPlacement winInfo = new WinAPI.WindowPlacement();
             WinAPI.GetWindowPlacement(hwnd, ref winInfo);
 
-            var prevHwnd = hwnd;
-            do {
-                prevHwnd = WinAPI.GetWindow(prevHwnd, WinAPI.GWCMD.GW_HWNDPREV);
-            } while (prevHwnd != IntPtr.Zero && VirtualDesktop.FromHwnd(prevHwnd) != desktops[Current]);
+            //var prevHwnd = hwnd;
+            //do {
+            //    prevHwnd = WinAPI.GetWindow(prevHwnd, WinAPI.GWCMD.GW_HWNDPREV);
+            //} while (prevHwnd != IntPtr.Zero && VirtualDesktop.FromHwnd(prevHwnd) != desktops[Current]);
 
             WinAPI.SetForegroundWindow(hwnd);
             if (winInfo.ShowCmd == WinAPI.ShowWindowCommands.ShowMinimized) {
@@ -226,10 +226,10 @@ namespace VirtualDesktopGridSwitcher {
                 WinAPI.ShowWindow(hwnd, winInfo.ShowCmd);
             }
 
-            if (prevHwnd != IntPtr.Zero) {
-                Debug.WriteLine("Browser behind " + prevHwnd + " " + GetWindowExeName(prevHwnd) + " " + GetWindowTitle(prevHwnd));
-                WinAPI.SetWindowPos(hwnd, prevHwnd, 0, 0, 0, 0, WinAPI.SWPFlags.SWP_NOMOVE | WinAPI.SWPFlags.SWP_NOSIZE | WinAPI.SWPFlags.SWP_NOACTIVATE);
-            }
+            //if (prevHwnd != IntPtr.Zero) {
+            //    Debug.WriteLine("Browser behind " + prevHwnd + " " + GetWindowExeName(prevHwnd) + " " + GetWindowTitle(prevHwnd));
+            //    WinAPI.SetWindowPos(hwnd, prevHwnd, 0, 0, 0, 0, WinAPI.SWPFlags.SWP_NOMOVE | WinAPI.SWPFlags.SWP_NOSIZE | WinAPI.SWPFlags.SWP_NOACTIVATE);
+            //}
         }
 
         private bool ActivateWindow(IntPtr hwnd) {
@@ -262,22 +262,27 @@ namespace VirtualDesktopGridSwitcher {
                             lastMoveOnNewWindowOpenedFromDesktop = Current;
                             lastMoveOnNewWindowOpenedTime = DateTime.Now;
                         } else {
-                            if ((DateTime.Now - lastMoveOnNewWindowOpenedTime).TotalMilliseconds < settings.MoveOnNewWindowDetectTimeoutMs &&
+                            var delay = (DateTime.Now - lastMoveOnNewWindowOpenedTime).TotalMilliseconds;
+                            if (delay < settings.MoveOnNewWindowDetectTimeoutMs &&
                                 lastMoveOnNewWindowOpenedFromDesktop != Current) {
 
                                 // work around browser activtation
                                 if (lastMoveOnNewWindowHwnd == hwnd) {
+                                    Debug.WriteLine((int)delay + " Reset Move New Window Timeout");
                                     lastMoveOnNewWindowOpenedTime = DateTime.Now;
+                                    return;
                                 } else {
 
+                                    lastMoveOnNewWindowHwnd = IntPtr.Zero;
                                     lastMoveOnNewWindowOpenedTime = DateTime.MinValue;
 
-                                    Debug.WriteLine("Move New Window " + hwnd + " to " + lastMoveOnNewWindowOpenedFromDesktop);
+                                    Debug.WriteLine((int)delay + " Move New Window " + hwnd + " to " + lastMoveOnNewWindowOpenedFromDesktop);
                                     MoveWindow(hwnd, lastMoveOnNewWindowOpenedFromDesktop);
 
                                     return;
                                 }
-                            } else {
+                            } else if (lastMoveOnNewWindowOpenedTime != DateTime.MinValue) {
+                                Debug.WriteLine("Timeout New Window Move " + delay);
                                 lastMoveOnNewWindowOpenedTime = DateTime.MinValue;
                             }
                         }
