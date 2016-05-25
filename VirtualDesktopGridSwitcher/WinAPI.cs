@@ -27,10 +27,10 @@ namespace VirtualDesktopGridSwitcher {
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool IsWindow(IntPtr hWnd);
 
-        public delegate bool CallBackPtr(IntPtr hwnd, int lParam);
+        public delegate bool CallBackPtr(IntPtr hwnd, IntPtr lParam);
 
         [DllImport("user32.dll")]
-        public static extern int EnumWindows(CallBackPtr callPtr, int lPar);
+        public static extern int EnumWindows(CallBackPtr callPtr, IntPtr lPar);
 
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr FindWindowEx(IntPtr parentHandle, IntPtr childAfter, string className, string windowTitle);
@@ -189,6 +189,10 @@ namespace VirtualDesktopGridSwitcher {
             /// used when minimizing windows from a different thread.
             /// </summary>
             ForceMinimize = 11
+        }
+
+        internal static void SetWindowPos(IntPtr hwnd, object hWND_TOP, int v1, int v2, int v3, int v4, SWPFlags sWPFlags) {
+            throw new NotImplementedException();
         }
 
         [DllImport("user32.dll")]
