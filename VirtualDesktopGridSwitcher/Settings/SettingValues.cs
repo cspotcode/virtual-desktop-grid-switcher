@@ -67,7 +67,7 @@ namespace VirtualDesktopGridSwitcher.Settings {
 
         public List<BrowserInfo> BrowserInfoList = new List<BrowserInfo>();
 
-        public int MoveOnNewWindowDetectTimeoutMs = 1000;
+        public int MoveOnNewWindowDetectTimeoutMs = 500;
 
         [XmlArrayItem(ElementName = "ExeName")]
         public List<string> MoveOnNewWindowExeNames = new List<string>();
