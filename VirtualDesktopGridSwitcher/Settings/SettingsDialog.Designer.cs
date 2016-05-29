@@ -66,7 +66,7 @@
             this.labelRows.Location = new System.Drawing.Point(161, 11);
             this.labelRows.Name = "labelRows";
             this.labelRows.Size = new System.Drawing.Size(48, 16);
-            this.labelRows.TabIndex = 0;
+            this.labelRows.TabIndex = 3;
             this.labelRows.Text = "Rows:";
             this.toolTipSettingsDialog.SetToolTip(this.labelRows, "Number of rows in desktop grid");
             // 
@@ -88,7 +88,7 @@
             this.checkBoxWrapAround.Location = new System.Drawing.Point(318, 10);
             this.checkBoxWrapAround.Name = "checkBoxWrapAround";
             this.checkBoxWrapAround.Size = new System.Drawing.Size(112, 20);
-            this.checkBoxWrapAround.TabIndex = 2;
+            this.checkBoxWrapAround.TabIndex = 5;
             this.checkBoxWrapAround.Text = "Wrap Around";
             this.toolTipSettingsDialog.SetToolTip(this.checkBoxWrapAround, "Switch/Move to opposite side of grid when move beyond edge");
             this.checkBoxWrapAround.UseVisualStyleBackColor = true;
@@ -100,7 +100,7 @@
             this.labelKeyModifiers.Location = new System.Drawing.Point(12, 38);
             this.labelKeyModifiers.Name = "labelKeyModifiers";
             this.labelKeyModifiers.Size = new System.Drawing.Size(180, 16);
-            this.labelKeyModifiers.TabIndex = 3;
+            this.labelKeyModifiers.TabIndex = 6;
             this.labelKeyModifiers.Text = "Switch Desktop Modifiers:";
             this.toolTipSettingsDialog.SetToolTip(this.labelKeyModifiers, "Key modifier combination to use with arrow keys to switch to another desktop");
             // 
@@ -117,7 +117,7 @@
             this.textBoxColumns.Location = new System.Drawing.Point(86, 10);
             this.textBoxColumns.Name = "textBoxColumns";
             this.textBoxColumns.Size = new System.Drawing.Size(49, 20);
-            this.textBoxColumns.TabIndex = 5;
+            this.textBoxColumns.TabIndex = 2;
             this.toolTipSettingsDialog.SetToolTip(this.textBoxColumns, "Number of columns in desktop grid");
             // 
             // checkBoxCtrlModifierSwitch
@@ -127,7 +127,7 @@
             this.checkBoxCtrlModifierSwitch.Location = new System.Drawing.Point(206, 37);
             this.checkBoxCtrlModifierSwitch.Name = "checkBoxCtrlModifierSwitch";
             this.checkBoxCtrlModifierSwitch.Size = new System.Drawing.Size(50, 20);
-            this.checkBoxCtrlModifierSwitch.TabIndex = 6;
+            this.checkBoxCtrlModifierSwitch.TabIndex = 7;
             this.checkBoxCtrlModifierSwitch.Text = "Ctrl";
             this.toolTipSettingsDialog.SetToolTip(this.checkBoxCtrlModifierSwitch, "Key modifier combination to use with arrow keys to switch to another desktop");
             this.checkBoxCtrlModifierSwitch.UseVisualStyleBackColor = true;
@@ -139,7 +139,7 @@
             this.checkBoxShiftModifierSwitch.Location = new System.Drawing.Point(370, 37);
             this.checkBoxShiftModifierSwitch.Name = "checkBoxShiftModifierSwitch";
             this.checkBoxShiftModifierSwitch.Size = new System.Drawing.Size(58, 20);
-            this.checkBoxShiftModifierSwitch.TabIndex = 7;
+            this.checkBoxShiftModifierSwitch.TabIndex = 10;
             this.checkBoxShiftModifierSwitch.Text = "Shift";
             this.toolTipSettingsDialog.SetToolTip(this.checkBoxShiftModifierSwitch, "Key modifier combination to use with arrow keys to switch to another desktop");
             this.checkBoxShiftModifierSwitch.UseVisualStyleBackColor = true;
@@ -151,7 +151,7 @@
             this.checkBoxAltModifierSwitch.Location = new System.Drawing.Point(318, 37);
             this.checkBoxAltModifierSwitch.Name = "checkBoxAltModifierSwitch";
             this.checkBoxAltModifierSwitch.Size = new System.Drawing.Size(45, 20);
-            this.checkBoxAltModifierSwitch.TabIndex = 8;
+            this.checkBoxAltModifierSwitch.TabIndex = 9;
             this.checkBoxAltModifierSwitch.Text = "Alt";
             this.toolTipSettingsDialog.SetToolTip(this.checkBoxAltModifierSwitch, "Key modifier combination to use with arrow keys to switch to another desktop");
             this.checkBoxAltModifierSwitch.UseVisualStyleBackColor = true;
@@ -163,7 +163,7 @@
             this.checkBoxWinModifierSwitch.Location = new System.Drawing.Point(262, 37);
             this.checkBoxWinModifierSwitch.Name = "checkBoxWinModifierSwitch";
             this.checkBoxWinModifierSwitch.Size = new System.Drawing.Size(51, 20);
-            this.checkBoxWinModifierSwitch.TabIndex = 9;
+            this.checkBoxWinModifierSwitch.TabIndex = 8;
             this.checkBoxWinModifierSwitch.Text = "Win";
             this.toolTipSettingsDialog.SetToolTip(this.checkBoxWinModifierSwitch, "Key modifier combination to use with arrow keys to switch to another desktop");
             this.checkBoxWinModifierSwitch.UseVisualStyleBackColor = true;
@@ -175,7 +175,7 @@
             this.checkBoxFKeys.Location = new System.Drawing.Point(15, 87);
             this.checkBoxFKeys.Name = "checkBoxFKeys";
             this.checkBoxFKeys.Size = new System.Drawing.Size(150, 20);
-            this.checkBoxFKeys.TabIndex = 10;
+            this.checkBoxFKeys.TabIndex = 16;
             this.checkBoxFKeys.Text = "F1-12 for Numbers";
             this.toolTipSettingsDialog.SetToolTip(this.checkBoxFKeys, "Use normal number keys or F number keys with modifiers to jump to specific deskto" +
         "p");
@@ -213,7 +213,7 @@
             this.checkBoxWinModifierMove.Location = new System.Drawing.Point(262, 63);
             this.checkBoxWinModifierMove.Name = "checkBoxWinModifierMove";
             this.checkBoxWinModifierMove.Size = new System.Drawing.Size(51, 20);
-            this.checkBoxWinModifierMove.TabIndex = 17;
+            this.checkBoxWinModifierMove.TabIndex = 13;
             this.checkBoxWinModifierMove.Text = "Win";
             this.toolTipSettingsDialog.SetToolTip(this.checkBoxWinModifierMove, "Key modifier combination to use with arrow keys to move a window to another deskt" +
         "op");
@@ -226,7 +226,7 @@
             this.checkBoxAltModifierMove.Location = new System.Drawing.Point(318, 63);
             this.checkBoxAltModifierMove.Name = "checkBoxAltModifierMove";
             this.checkBoxAltModifierMove.Size = new System.Drawing.Size(45, 20);
-            this.checkBoxAltModifierMove.TabIndex = 16;
+            this.checkBoxAltModifierMove.TabIndex = 14;
             this.checkBoxAltModifierMove.Text = "Alt";
             this.toolTipSettingsDialog.SetToolTip(this.checkBoxAltModifierMove, "Key modifier combination to use with arrow keys to move a window to another deskt" +
         "op");
@@ -252,7 +252,7 @@
             this.checkBoxCtrlModifierMove.Location = new System.Drawing.Point(206, 63);
             this.checkBoxCtrlModifierMove.Name = "checkBoxCtrlModifierMove";
             this.checkBoxCtrlModifierMove.Size = new System.Drawing.Size(50, 20);
-            this.checkBoxCtrlModifierMove.TabIndex = 14;
+            this.checkBoxCtrlModifierMove.TabIndex = 12;
             this.checkBoxCtrlModifierMove.Text = "Ctrl";
             this.toolTipSettingsDialog.SetToolTip(this.checkBoxCtrlModifierMove, "Key modifier combination to use with arrow keys to move a window to another deskt" +
         "op");
@@ -265,7 +265,7 @@
             this.labelMoveToDesktopModifiers.Location = new System.Drawing.Point(12, 64);
             this.labelMoveToDesktopModifiers.Name = "labelMoveToDesktopModifiers";
             this.labelMoveToDesktopModifiers.Size = new System.Drawing.Size(191, 16);
-            this.labelMoveToDesktopModifiers.TabIndex = 13;
+            this.labelMoveToDesktopModifiers.TabIndex = 11;
             this.labelMoveToDesktopModifiers.Text = "Move To Desktop Modifiers:";
             this.toolTipSettingsDialog.SetToolTip(this.labelMoveToDesktopModifiers, "Key modifier combination to use with arrow keys to move a window to another deskt" +
         "op");
@@ -277,7 +277,7 @@
             this.checkBoxActivateWebBrowser.Location = new System.Drawing.Point(15, 167);
             this.checkBoxActivateWebBrowser.Name = "checkBoxActivateWebBrowser";
             this.checkBoxActivateWebBrowser.Size = new System.Drawing.Size(203, 20);
-            this.checkBoxActivateWebBrowser.TabIndex = 18;
+            this.checkBoxActivateWebBrowser.TabIndex = 29;
             this.checkBoxActivateWebBrowser.Text = "Default Browser Activation";
             this.toolTipSettingsDialog.SetToolTip(this.checkBoxActivateWebBrowser, "On desktop switch, last active default browser window on that desktop is activate" +
         "d before active window so that links open in current desktop");
@@ -290,7 +290,7 @@
             this.checkBoxWinModifierSticky.Location = new System.Drawing.Point(231, 141);
             this.checkBoxWinModifierSticky.Name = "checkBoxWinModifierSticky";
             this.checkBoxWinModifierSticky.Size = new System.Drawing.Size(51, 20);
-            this.checkBoxWinModifierSticky.TabIndex = 24;
+            this.checkBoxWinModifierSticky.TabIndex = 25;
             this.checkBoxWinModifierSticky.Text = "Win";
             this.toolTipSettingsDialog.SetToolTip(this.checkBoxWinModifierSticky, "Key modifier combination to use with arrow keys to move a window to another deskt" +
         "op");
@@ -303,7 +303,7 @@
             this.checkBoxAltModifierSticky.Location = new System.Drawing.Point(287, 141);
             this.checkBoxAltModifierSticky.Name = "checkBoxAltModifierSticky";
             this.checkBoxAltModifierSticky.Size = new System.Drawing.Size(45, 20);
-            this.checkBoxAltModifierSticky.TabIndex = 23;
+            this.checkBoxAltModifierSticky.TabIndex = 26;
             this.checkBoxAltModifierSticky.Text = "Alt";
             this.toolTipSettingsDialog.SetToolTip(this.checkBoxAltModifierSticky, "Key modifier combination to use with arrow keys to move a window to another deskt" +
         "op");
@@ -316,7 +316,7 @@
             this.checkBoxShiftModifierSticky.Location = new System.Drawing.Point(339, 141);
             this.checkBoxShiftModifierSticky.Name = "checkBoxShiftModifierSticky";
             this.checkBoxShiftModifierSticky.Size = new System.Drawing.Size(58, 20);
-            this.checkBoxShiftModifierSticky.TabIndex = 22;
+            this.checkBoxShiftModifierSticky.TabIndex = 27;
             this.checkBoxShiftModifierSticky.Text = "Shift";
             this.toolTipSettingsDialog.SetToolTip(this.checkBoxShiftModifierSticky, "Key modifier combination to use with arrow keys to move a window to another deskt" +
         "op");
@@ -329,7 +329,7 @@
             this.checkBoxCtrlModifierSticky.Location = new System.Drawing.Point(175, 141);
             this.checkBoxCtrlModifierSticky.Name = "checkBoxCtrlModifierSticky";
             this.checkBoxCtrlModifierSticky.Size = new System.Drawing.Size(50, 20);
-            this.checkBoxCtrlModifierSticky.TabIndex = 21;
+            this.checkBoxCtrlModifierSticky.TabIndex = 24;
             this.checkBoxCtrlModifierSticky.Text = "Ctrl";
             this.toolTipSettingsDialog.SetToolTip(this.checkBoxCtrlModifierSticky, "Key modifier combination to use with arrow keys to move a window to another deskt" +
         "op");
@@ -342,7 +342,7 @@
             this.labelToggleSticky.Location = new System.Drawing.Point(12, 142);
             this.labelToggleSticky.Name = "labelToggleSticky";
             this.labelToggleSticky.Size = new System.Drawing.Size(159, 16);
-            this.labelToggleSticky.TabIndex = 20;
+            this.labelToggleSticky.TabIndex = 23;
             this.labelToggleSticky.Text = "Toggle Sticky Window:";
             this.toolTipSettingsDialog.SetToolTip(this.labelToggleSticky, "Key modifier combination to use with arrow keys to move a window to another deskt" +
         "op");
@@ -354,7 +354,7 @@
             this.checkBoxWinModifierAlwaysOnTop.Location = new System.Drawing.Point(231, 111);
             this.checkBoxWinModifierAlwaysOnTop.Name = "checkBoxWinModifierAlwaysOnTop";
             this.checkBoxWinModifierAlwaysOnTop.Size = new System.Drawing.Size(51, 20);
-            this.checkBoxWinModifierAlwaysOnTop.TabIndex = 30;
+            this.checkBoxWinModifierAlwaysOnTop.TabIndex = 19;
             this.checkBoxWinModifierAlwaysOnTop.Text = "Win";
             this.toolTipSettingsDialog.SetToolTip(this.checkBoxWinModifierAlwaysOnTop, "Key modifier combination to use with arrow keys to move a window to another deskt" +
         "op");
@@ -367,7 +367,7 @@
             this.checkBoxAltModifierAlwaysOnTop.Location = new System.Drawing.Point(287, 111);
             this.checkBoxAltModifierAlwaysOnTop.Name = "checkBoxAltModifierAlwaysOnTop";
             this.checkBoxAltModifierAlwaysOnTop.Size = new System.Drawing.Size(45, 20);
-            this.checkBoxAltModifierAlwaysOnTop.TabIndex = 29;
+            this.checkBoxAltModifierAlwaysOnTop.TabIndex = 20;
             this.checkBoxAltModifierAlwaysOnTop.Text = "Alt";
             this.toolTipSettingsDialog.SetToolTip(this.checkBoxAltModifierAlwaysOnTop, "Key modifier combination to use with arrow keys to move a window to another deskt" +
         "op");
@@ -380,7 +380,7 @@
             this.checkBoxShiftModifierAlwaysOnTop.Location = new System.Drawing.Point(339, 111);
             this.checkBoxShiftModifierAlwaysOnTop.Name = "checkBoxShiftModifierAlwaysOnTop";
             this.checkBoxShiftModifierAlwaysOnTop.Size = new System.Drawing.Size(58, 20);
-            this.checkBoxShiftModifierAlwaysOnTop.TabIndex = 28;
+            this.checkBoxShiftModifierAlwaysOnTop.TabIndex = 21;
             this.checkBoxShiftModifierAlwaysOnTop.Text = "Shift";
             this.toolTipSettingsDialog.SetToolTip(this.checkBoxShiftModifierAlwaysOnTop, "Key modifier combination to use with arrow keys to move a window to another deskt" +
         "op");
@@ -393,7 +393,7 @@
             this.checkBoxCtrlModifierAlwaysOnTop.Location = new System.Drawing.Point(175, 111);
             this.checkBoxCtrlModifierAlwaysOnTop.Name = "checkBoxCtrlModifierAlwaysOnTop";
             this.checkBoxCtrlModifierAlwaysOnTop.Size = new System.Drawing.Size(50, 20);
-            this.checkBoxCtrlModifierAlwaysOnTop.TabIndex = 27;
+            this.checkBoxCtrlModifierAlwaysOnTop.TabIndex = 18;
             this.checkBoxCtrlModifierAlwaysOnTop.Text = "Ctrl";
             this.toolTipSettingsDialog.SetToolTip(this.checkBoxCtrlModifierAlwaysOnTop, "Key modifier combination to use with arrow keys to move a window to another deskt" +
         "op");
@@ -406,28 +406,34 @@
             this.labelToggleAkwaysOnTop.Location = new System.Drawing.Point(12, 112);
             this.labelToggleAkwaysOnTop.Name = "labelToggleAkwaysOnTop";
             this.labelToggleAkwaysOnTop.Size = new System.Drawing.Size(160, 16);
-            this.labelToggleAkwaysOnTop.TabIndex = 26;
+            this.labelToggleAkwaysOnTop.TabIndex = 17;
             this.labelToggleAkwaysOnTop.Text = "Toggle Always On Top:";
             this.toolTipSettingsDialog.SetToolTip(this.labelToggleAkwaysOnTop, "Key modifier combination to use with arrow keys to move a window to another deskt" +
         "op");
             // 
             // comboBoxKeySticky
             // 
+            this.comboBoxKeySticky.DropDownStyle = System.Windows.Forms.ComboBoxStyle.Simple;
             this.comboBoxKeySticky.Font = new System.Drawing.Font("Verdana", 9.75F);
             this.comboBoxKeySticky.FormattingEnabled = true;
             this.comboBoxKeySticky.Location = new System.Drawing.Point(402, 139);
             this.comboBoxKeySticky.Name = "comboBoxKeySticky";
             this.comboBoxKeySticky.Size = new System.Drawing.Size(158, 24);
-            this.comboBoxKeySticky.TabIndex = 19;
+            this.comboBoxKeySticky.TabIndex = 28;
+            this.comboBoxKeySticky.KeyDown += new System.Windows.Forms.KeyEventHandler(this.comboBoxKey_KeyDown);
+            this.comboBoxKeySticky.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.comboBoxKey_KeyPress);
             // 
             // comboBoxAlwaysOnTopKey
             // 
+            this.comboBoxAlwaysOnTopKey.DropDownStyle = System.Windows.Forms.ComboBoxStyle.Simple;
             this.comboBoxAlwaysOnTopKey.Font = new System.Drawing.Font("Verdana", 9.75F);
             this.comboBoxAlwaysOnTopKey.FormattingEnabled = true;
             this.comboBoxAlwaysOnTopKey.Location = new System.Drawing.Point(402, 109);
             this.comboBoxAlwaysOnTopKey.Name = "comboBoxAlwaysOnTopKey";
             this.comboBoxAlwaysOnTopKey.Size = new System.Drawing.Size(158, 24);
-            this.comboBoxAlwaysOnTopKey.TabIndex = 25;
+            this.comboBoxAlwaysOnTopKey.TabIndex = 22;
+            this.comboBoxAlwaysOnTopKey.KeyDown += new System.Windows.Forms.KeyEventHandler(this.comboBoxKey_KeyDown);
+            this.comboBoxAlwaysOnTopKey.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.comboBoxKey_KeyPress);
             // 
             // SettingsDialog
             // 

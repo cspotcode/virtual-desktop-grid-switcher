@@ -138,5 +138,20 @@ namespace VirtualDesktopGridSwitcher.Settings {
         private void buttonOK_Click(object sender, EventArgs e) {
             SaveValues();
         }
+
+        private void comboBoxKey_KeyDown(object sender, KeyEventArgs e) {
+            if (e.KeyCode != Keys.ControlKey &&
+                e.KeyCode != Keys.Menu &&
+                e.KeyCode != Keys.ShiftKey &&
+                e.KeyCode != Keys.LWin &&
+                e.KeyCode != Keys.RWin) {
+                ((ComboBox)sender).SelectedItem = e.KeyCode;
+                e.Handled = true;
+            }
+        }
+
+        private void comboBoxKey_KeyPress(object sender, KeyPressEventArgs e) {
+            e.Handled = true;
+        }
     }
 }
