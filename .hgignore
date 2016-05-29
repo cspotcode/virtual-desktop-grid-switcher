@@ -13,3 +13,4 @@ ipch/*
 .git
 VirtualDesktopGridSwitcher.VC.*
 ~$*.docx
+Thumbs.db
