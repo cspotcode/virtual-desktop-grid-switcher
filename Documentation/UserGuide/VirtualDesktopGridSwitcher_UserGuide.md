@@ -33,6 +33,11 @@ Note if another program is already using a key combination you will be warned th
 
 You can also switch/move to a particular desktop by number. The default is to use the plain number keys. You can switch to the F1-12 keys but these are very commonly already assigned for other uses.
 
+Window Activation on Switch From Empty Desktop
+----------------------------------------------
+
+Virtual Desktop Grid Switcher fixes an issue in Windows 10 where switching from a desktop which is empty to a desktop which had an activate window does not reactivate that window.
+
 Default Browser Activation
 --------------------------
 
