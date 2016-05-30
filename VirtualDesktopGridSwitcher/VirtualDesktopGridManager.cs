@@ -15,7 +15,14 @@ using System.Threading;
 
 namespace VirtualDesktopGridSwitcher {
 
-    class VirtualDesktopGridManager: IDisposable {
+    class VirtualDesktopGridManager: IDisposable, IMessageFilter {
+
+        #region Interop
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        private static extern uint RegisterWindowMessage(string lpProcName);
+        #endregion
+
+        private uint commandWindowMessage;
 
         private SettingValues settings;
         private SysTrayProcess sysTrayProcess;
@@ -47,6 +54,10 @@ namespace VirtualDesktopGridSwitcher {
 
             foregroundWindowChangedDelegate = new WinAPI.WinEventDelegate(ForegroundWindowChanged);
             fgWindowHook = WinAPI.SetWinEventHook(WinAPI.EVENT_SYSTEM_FOREGROUND, WinAPI.EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, foregroundWindowChangedDelegate, 0, 0, WinAPI.WINEVENT_OUTOFCONTEXT);
+
+            // Create a custom message ID for other processes to trigger actions.
+            this.commandWindowMessage = RegisterWindowMessage("VIRTUALDESKTOPGRIDSWITCHER_COMMAND");
+            Application.AddMessageFilter(this);
 
             Start();
         }
@@ -622,6 +633,62 @@ namespace VirtualDesktopGridSwitcher {
         private bool IsKeyPressed(short keystate) {
             return (keystate & 0x8000) != 0;
         }
-    }
 
+        public bool PreFilterMessage(ref Message message)
+        {
+            // Ignore unknown messages
+            if (message.Msg != this.commandWindowMessage)
+            { return false; }
+
+            int command = message.WParam.ToInt32();
+            switch(command)
+            {
+                case GO_UP:
+                    Switch(Up);
+                    break;
+                case GO_LEFT:
+                    Switch(Left);
+                    break;
+                case GO_RIGHT:
+                    Switch(Right);
+                    break;
+                case GO_DOWN:
+                    Switch(Down);
+                    break;
+                case MOVE_UP:
+                    Move(Up);
+                    break;
+                case MOVE_LEFT:
+                    Move(Left);
+                    break;
+                case MOVE_RIGHT:
+                    Move(Right);
+                    break;
+                case MOVE_DOWN:
+                    Move(Down);
+                    break;
+                case TOGGLE_ALWAYS_ON_TOP:
+                    ToggleWindowAlwaysOnTop(WinAPI.GetForegroundWindow());
+                    break;
+                case TOGGLE_STICKY:
+                    ToggleWindowSticky(WinAPI.GetForegroundWindow());
+                    break;
+                default:
+                    // Do nothing
+                    break;
+            }
+            return true;
+        }
+
+        const int GO_UP = 1;
+        const int GO_LEFT = 2;
+        const int GO_RIGHT = 3;
+        const int GO_DOWN = 4;
+        const int MOVE_UP = 5;
+        const int MOVE_LEFT = 6;
+        const int MOVE_RIGHT = 7;
+        const int MOVE_DOWN = 8;
+        const int TOGGLE_ALWAYS_ON_TOP = 9;
+        const int TOGGLE_STICKY = 10;
+    }
 }
