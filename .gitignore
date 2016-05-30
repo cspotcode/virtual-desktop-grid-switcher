@@ -1,0 +1,15 @@
+bin
+obj
+Debug
+Release
+*.suo
+*.csproj.user
+*.vcxprojResolveAssemblyReference.cache
+*.opensdf
+*.sdf
+ipch
+*.vcxproj.user
+.git
+VirtualDesktopGridSwitcher.VC.*
+~$*.docx
+Thumbs.db
