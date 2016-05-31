@@ -487,6 +487,9 @@ namespace VirtualDesktopGridSwitcher {
         private List<Hotkey> hotkeys;
 
         private void RegisterHotKeys() {
+
+            if(!settings.registerHotkeys)
+            { return; }
             
             hotkeys = new List<Hotkey>();
 

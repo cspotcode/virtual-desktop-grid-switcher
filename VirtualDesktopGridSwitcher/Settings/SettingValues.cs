@@ -34,6 +34,8 @@ namespace VirtualDesktopGridSwitcher.Settings {
 
         public bool WrapAround = false;
 
+        public bool registerHotkeys = true;
+
         public Modifiers SwitchModifiers = 
             new Modifiers {
                 Ctrl = true, Win = false, Alt = true, Shift = false

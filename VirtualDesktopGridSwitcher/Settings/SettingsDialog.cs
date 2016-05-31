@@ -37,6 +37,8 @@ namespace VirtualDesktopGridSwitcher.Settings {
 
             checkBoxWrapAround.Checked = settings.WrapAround;
 
+            checkBoxRegisterHotkeys.Checked = settings.registerHotkeys;
+
             checkBoxCtrlModifierSwitch.Checked = settings.SwitchModifiers.Ctrl;
             checkBoxWinModifierSwitch.Checked = settings.SwitchModifiers.Win;
             checkBoxAltModifierSwitch.Checked = settings.SwitchModifiers.Alt;
@@ -95,6 +97,8 @@ namespace VirtualDesktopGridSwitcher.Settings {
             }
 
             settings.WrapAround = checkBoxWrapAround.Checked;
+
+            settings.registerHotkeys = checkBoxRegisterHotkeys.Checked;
 
             settings.SwitchModifiers.Ctrl = checkBoxCtrlModifierSwitch.Checked;
             settings.SwitchModifiers.Win = checkBoxWinModifierSwitch.Checked;
