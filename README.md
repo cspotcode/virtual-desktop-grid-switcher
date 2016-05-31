@@ -3,7 +3,7 @@ unlimited custom hotkeys, overriding built-in Windows shortcuts, or any other ad
 
 ## Quick-start:
 
-Download the latest release and unzip it somewhere.  Install AutoHotkey.  Launch `autohotkey/virtual-desktop-hotkeys.ahk`.  That's it!
+Download the [latest release](https://github.com/cspotcode/virtual-desktop-grid-switcher/releases/) and unzip it somewhere.  Install AutoHotkey.  Run `autohotkey/virtual-desktop-hotkeys.ahk`.  That's it!
 
 ## Hotkeys:
 

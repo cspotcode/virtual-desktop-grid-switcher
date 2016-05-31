@@ -1,3 +1,8 @@
+ param (
+    [string]$version = "TODO"
+ )
+
+$ErrorActionPreference = "Stop"
 rm -r publish
 mkdir publish
 cp -Recurse Package/* publish/
@@ -15,3 +20,10 @@ cp -Recurse autohotkey publish/
 cp LICENSE.txt publish/
 cp README.md publish/
 cp CREDITS.txt publish/
+
+Add-Type -assembly "system.io.compression.filesystem"
+$dirname = (Resolve-Path "./").ToString()
+$source = $dirname + "/publish"
+$destination = $dirname + "/VirtualDesktopGridSwitcher-v" + $version + ".zip"
+rm $destination
+[io.compression.zipfile]::CreateFromDirectory($source, $destination)
