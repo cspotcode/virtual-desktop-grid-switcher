@@ -1,5 +1,15 @@
-#persistent
+#NoTrayIcon
+#SingleInstance Force
+#Persistent
 MsgNum := DllCall("RegisterWindowMessage", Str, "VIRTUALDESKTOPGRIDSWITCHER_COMMAND")
+
+exeName := "VirtualDesktopGridSwitcher.exe"
+
+; Launch VirtualDesktopGridManager if it's not already running.
+DetectHiddenWindows, On
+If !WinExist("ahk_exe " . exeName) {
+    Run "../VirtualDesktopGridSwitcher.exe"
+}
 
 ; All commands
 GO_UP := 1
@@ -16,8 +26,9 @@ return
 
 ; Return an HWND that will receive our commands.
 GetTargetHwnd() {
+    global exeName
     DetectHiddenWindows, On
-    WinGet, a, List, ahk_exe VirtualDesktopGridSwitcher.exe
+    WinGet, a, List, ahk_exe %exeName%
     Loop, %a% {
         id := a%A_Index%
         WinGetClass, cls, ahk_id %id%
