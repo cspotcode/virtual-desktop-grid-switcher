@@ -598,9 +598,13 @@ namespace VirtualDesktopGridSwitcher {
             }
         }
 
-        private void UnregisterHotKeys() {
-            hotkeys.ForEach(hk => hk.Unregister());
-            hotkeys = null;
+        private void UnregisterHotKeys()
+        {
+            if (hotkeys != null)
+            {
+                hotkeys.ForEach(hk => hk.Unregister());
+                hotkeys = null;
+            }
         }
 
 
