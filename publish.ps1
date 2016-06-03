@@ -3,7 +3,9 @@
  )
 
 $ErrorActionPreference = "Stop"
-rm -r publish
+if(Test-Path publish) {
+    rm -r publish
+}
 mkdir publish
 cp -Recurse Package/* publish/
 # cp -Recurse bin/Release/* publish/
@@ -25,5 +27,7 @@ Add-Type -assembly "system.io.compression.filesystem"
 $dirname = (Resolve-Path "./").ToString()
 $source = $dirname + "/publish"
 $destination = $dirname + "/VirtualDesktopGridSwitcher-v" + $version + ".zip"
-rm $destination
+if(Test-Path $destination) {
+    rm $destination
+}
 [io.compression.zipfile]::CreateFromDirectory($source, $destination)
