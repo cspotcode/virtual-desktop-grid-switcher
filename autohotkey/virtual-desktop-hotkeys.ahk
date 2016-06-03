@@ -1,4 +1,5 @@
-#NoTrayIcon
+; Uncomment if you don't want this script appearing in your system tray
+; #NoTrayIcon
 #SingleInstance Force
 #Persistent
 MsgNum := DllCall("RegisterWindowMessage", Str, "VIRTUALDESKTOPGRIDSWITCHER_COMMAND")
