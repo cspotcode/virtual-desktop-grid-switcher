@@ -24,6 +24,9 @@ namespace VirtualDesktopGridSwitcher {
 
         private uint commandWindowMessage;
 
+        /** When this is not zero, certain actions will send a message to this hwnd */
+        private IntPtr hwndMessageTarget = IntPtr.Zero;
+
         private SettingValues settings;
         private SysTrayProcess sysTrayProcess;
 
@@ -288,7 +291,7 @@ namespace VirtualDesktopGridSwitcher {
                                     lastMoveOnNewWindowOpenedTime = DateTime.MinValue;
 
                                     Debug.WriteLine((int)delay + " Move New Window " + hwnd + " to " + lastMoveOnNewWindowOpenedFromDesktop);
-                                    MoveWindow(hwnd, lastMoveOnNewWindowOpenedFromDesktop);
+                                    MoveWindowAndSwitchDesktop(hwnd, lastMoveOnNewWindowOpenedFromDesktop);
 
                                     return;
                                 }
@@ -349,8 +352,12 @@ namespace VirtualDesktopGridSwitcher {
         }
 
         private void ToggleWindowSticky(IntPtr hwnd) {
-            WinAPI.SetWindowLongPtr(hwnd, WinAPI.GWL_EXSTYLE,
-              WinAPI.GetWindowLongPtr(hwnd, WinAPI.GWL_EXSTYLE).XOR(WinAPI.WS_EX_TOOLWINDOW));
+            if(stickyWindows.Contains(hwnd)) {
+                stickyWindows.Remove(hwnd);
+            }
+            else {
+                stickyWindows.Add(hwnd);
+            }
         }
 
         private static bool IsWindowTopMost(IntPtr hWnd) {
@@ -433,10 +440,20 @@ namespace VirtualDesktopGridSwitcher {
             }
         }
 
+        private void SendSwitchedDesktopMessage() {
+            if (hwndMessageTarget != IntPtr.Zero) {
+                WinAPI.PostMessage(hwndMessageTarget, commandWindowMessage, (IntPtr)SWITCHED_DESKTOP, (IntPtr)Current);
+            }
+        }
+
         public void Switch(int index) {
             activeWindows[Current] = WinAPI.GetForegroundWindow();
             Debug.WriteLine("Switch Active " + Current + " " + activeWindows[Current]);
+
+            MoveStickyWindows(index);
+
             Current = index;
+            SendSwitchedDesktopMessage();
         }
 
         public void Move(int index) {
@@ -451,8 +468,19 @@ namespace VirtualDesktopGridSwitcher {
                     }
                 }
             }
+            MoveWindowAndSwitchDesktop(hwnd, index);
+        }
 
-            MoveWindow(hwnd, index);
+        private void MoveWindowAndSwitchDesktop(IntPtr hwnd, int index) {
+            if (hwnd != IntPtr.Zero) {
+                MoveStickyWindows(index);
+                MoveWindow(hwnd, index);
+
+                activeWindows[index] = hwnd;
+                WinAPI.SetForegroundWindow(hwnd);
+                Current = index;
+                SendSwitchedDesktopMessage();
+            }
         }
 
         private void MoveWindow(IntPtr hwnd, int index) {
@@ -469,11 +497,16 @@ namespace VirtualDesktopGridSwitcher {
                 if (!VirtualDesktopHelper.MoveToDesktop(hwnd, desktops[index])) {
                     this.VDMHelper.MoveWindowToDesktop(hwnd, desktops[index].Id);
                 }
-
-                activeWindows[index] = hwnd;
-                WinAPI.SetForegroundWindow(hwnd);
-                Current = index;
             }
+        }
+
+        private void MoveStickyWindows(int index) {
+            stickyWindows.RemoveWhere(stickyWindow => {
+                // MoveWindow doesn't throw an error when window no longer exists.
+                MoveWindow(stickyWindow, index);
+                // Remove windows that no longer exist.
+                return !WinAPI.IsWindow(stickyWindow);
+            });
         }
 
         private int ColumnOf(int index) {
@@ -485,6 +518,8 @@ namespace VirtualDesktopGridSwitcher {
         }
 
         private List<Hotkey> hotkeys;
+
+        private HashSet<IntPtr> stickyWindows = new HashSet<IntPtr>();
 
         private void RegisterHotKeys() {
 
@@ -648,6 +683,7 @@ namespace VirtualDesktopGridSwitcher {
             { return false; }
 
             int command = message.WParam.ToInt32();
+            int value = message.LParam.ToInt32();
             switch(command)
             {
                 case GO_UP:
@@ -680,6 +716,13 @@ namespace VirtualDesktopGridSwitcher {
                 case TOGGLE_STICKY:
                     ToggleWindowSticky(WinAPI.GetForegroundWindow());
                     break;
+                case DEBUG_SHOW_CURRENT_WINDOW_HWND:
+                    var hwnd = WinAPI.GetForegroundWindow();
+                    MessageBox.Show("Current window is: " + hwnd);
+                    break;
+                case SET_HWND_MESSAGE_TARGET:
+                    hwndMessageTarget = message.LParam;
+                    break;
                 default:
                     // Do nothing
                     break;
@@ -697,5 +740,8 @@ namespace VirtualDesktopGridSwitcher {
         const int MOVE_DOWN = 8;
         const int TOGGLE_ALWAYS_ON_TOP = 9;
         const int TOGGLE_STICKY = 10;
+        const int DEBUG_SHOW_CURRENT_WINDOW_HWND = 11;
+        const int SET_HWND_MESSAGE_TARGET = 12;
+        const int SWITCHED_DESKTOP = 13;
     }
 }
