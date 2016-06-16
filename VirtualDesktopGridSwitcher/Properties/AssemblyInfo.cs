@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("VirtualDesktopGridSwitcher")]
-[assembly: AssemblyCopyright("Copyright © Simon Liddington 2016")]
+[assembly: AssemblyCopyright("Copyright © Simon Liddington, Andrew Bradley 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
