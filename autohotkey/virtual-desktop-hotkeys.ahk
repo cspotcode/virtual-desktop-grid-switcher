@@ -22,6 +22,11 @@ DesktopNames() {
     desktopName[8] := ""
 }
 
+Options() {
+    global
+    overlayEnabled := 1 ; 1 = enabled, 0 = disabled
+}
+
 ;;;;;;;
 ; Hotkeys.  Customize these to your liking.
 
@@ -71,6 +76,7 @@ Initialize() {
     global
     CommandConstants()
     DesktopNames()
+    Options()
 
     MsgNum := DllCall("RegisterWindowMessage", Str, "VIRTUALDESKTOPGRIDSWITCHER_COMMAND")
 
@@ -157,7 +163,10 @@ HexToDec(hex) {
 }
 
 ShowOverlay(title, message) {
-    global overlayVisible
+    global overlayVisible, overlayEnabled
+    if(!overlayEnabled) {
+        return
+    }
     overlayVisible := 1
     SysGet, primary, MonitorPrimary
     SysGet, monitor, Monitor, % primary
