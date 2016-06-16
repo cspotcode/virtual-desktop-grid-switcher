@@ -305,7 +305,6 @@ namespace VirtualDesktopGridSwitcher {
                         lastActiveBrowserWindows[windowDesktopId] = hwnd;
                     }
                 }
-                //ReleaseModifierKeys();
             }
         }
 
@@ -504,39 +503,6 @@ namespace VirtualDesktopGridSwitcher {
         }
 
         private HashSet<IntPtr> stickyWindows = new HashSet<IntPtr>();
-
-        private void ReleaseModifierKeys() {
-            const int WM_KEYUP = 0x101;
-            const int VK_SHIFT = 0x10;
-            const int VK_CONTROL = 0x11;
-            const int VK_MENU = 0x12;
-            const int VK_LWIN = 0x5B;
-            const int VK_RWIN = 0x5C;
-
-            var activeHWnd = WinAPI.GetForegroundWindow();
-            if (IsKeyPressed(WinAPI.GetAsyncKeyState(VK_MENU))) {
-                WinAPI.PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_MENU, (IntPtr)0xC0380001);
-                WinAPI.PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_MENU, (IntPtr)0xC1380001);
-            }
-            if (IsKeyPressed(WinAPI.GetAsyncKeyState(VK_CONTROL))) {
-                WinAPI.PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_CONTROL, (IntPtr)0xC01D0001);
-                WinAPI.PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_CONTROL, (IntPtr)0xC11D0001);
-            }
-            if (IsKeyPressed(WinAPI.GetAsyncKeyState(VK_SHIFT))) {
-                WinAPI.PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_SHIFT, (IntPtr)0xC02A0001);
-                WinAPI.PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_SHIFT, (IntPtr)0xC0360001);
-            }
-            if (IsKeyPressed(WinAPI.GetAsyncKeyState(VK_LWIN))) {
-                WinAPI.PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_LWIN, (IntPtr)0xC15B0001);
-            }
-            if (IsKeyPressed(WinAPI.GetAsyncKeyState(VK_RWIN))) {
-                WinAPI.PostMessage(activeHWnd, WM_KEYUP, (IntPtr)VK_RWIN, (IntPtr)0xC15C0001);
-            }
-        }
-
-        private bool IsKeyPressed(short keystate) {
-            return (keystate & 0x8000) != 0;
-        }
 
         public bool PreFilterMessage(ref Message message)
         {
