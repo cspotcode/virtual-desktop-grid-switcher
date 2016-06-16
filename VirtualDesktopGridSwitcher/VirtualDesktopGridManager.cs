@@ -52,14 +52,14 @@ namespace VirtualDesktopGridSwitcher {
             this.settings = settings;
             this.sysTrayProcess = sysTrayProcess;
 
-            this.VDMHelper = VdmHelperFactory.CreateInstance();
-            this.VDMHelper.Init();
+            VDMHelper = VdmHelperFactory.CreateInstance();
+            VDMHelper.Init();
 
             foregroundWindowChangedDelegate = new WinAPI.WinEventDelegate(ForegroundWindowChanged);
             fgWindowHook = WinAPI.SetWinEventHook(WinAPI.EVENT_SYSTEM_FOREGROUND, WinAPI.EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, foregroundWindowChangedDelegate, 0, 0, WinAPI.WINEVENT_OUTOFCONTEXT);
 
             // Create a custom message ID for other processes to trigger actions.
-            this.commandWindowMessage = RegisterWindowMessage("VIRTUALDESKTOPGRIDSWITCHER_COMMAND");
+            commandWindowMessage = RegisterWindowMessage("VIRTUALDESKTOPGRIDSWITCHER_COMMAND");
             Application.AddMessageFilter(this);
 
             Start();
@@ -69,7 +69,7 @@ namespace VirtualDesktopGridSwitcher {
         {
             Stop();
 
-            this.VDMHelper.Dispose();
+            VDMHelper.Dispose();
 
             WinAPI.UnhookWinEvent(fgWindowHook);
         }
@@ -93,7 +93,7 @@ namespace VirtualDesktopGridSwitcher {
                 int index = 0;
                 desktops.ToList().ForEach(d => desktopIdLookup.Add(d, index++));
 
-                this._current = desktopIdLookup[VirtualDesktop.Current];
+                _current = desktopIdLookup[VirtualDesktop.Current];
 
                 activeWindows = new IntPtr[desktops.Length];
                 lastActiveBrowserWindows = new IntPtr[desktops.Length];
@@ -145,7 +145,7 @@ namespace VirtualDesktopGridSwitcher {
                 var newDesktop = desktopIdLookup[VirtualDesktop.Current];
                 Debug.WriteLine("Switched to " + newDesktop);
 
-                this._current = newDesktop;
+                _current = newDesktop;
                 sysTrayProcess.ShowIconForDesktop(Current);
 
                 var fgHwnd = WinAPI.GetForegroundWindow();
@@ -249,7 +249,7 @@ namespace VirtualDesktopGridSwitcher {
         private bool ActivateWindow(IntPtr hwnd) {
             if (hwnd != IntPtr.Zero) {
                 var desktop = VirtualDesktop.FromHwnd(hwnd);
-                if (desktop != null && desktopIdLookup[desktop] == this._current) {
+                if (desktop != null && desktopIdLookup[desktop] == _current) {
                     Debug.WriteLine("Activate " + Current + " " + hwnd);
                     WinAPI.SetForegroundWindow(hwnd);
                     return true;
@@ -495,7 +495,7 @@ namespace VirtualDesktopGridSwitcher {
 
                 Debug.WriteLine("Move " + hwnd + " from " + Current + " to " + index);
                 if (!VirtualDesktopHelper.MoveToDesktop(hwnd, desktops[index])) {
-                    this.VDMHelper.MoveWindowToDesktop(hwnd, desktops[index].Id);
+                    VDMHelper.MoveWindowToDesktop(hwnd, desktops[index].Id);
                 }
             }
         }
@@ -528,10 +528,10 @@ namespace VirtualDesktopGridSwitcher {
             
             hotkeys = new List<Hotkey>();
 
-            RegisterSwitchHotkey(Keys.Left, delegate { this.Switch(Left); });
-            RegisterSwitchHotkey(Keys.Right, delegate { this.Switch(Right); });
-            RegisterSwitchHotkey(Keys.Up, delegate { this.Switch(Up); });
-            RegisterSwitchHotkey(Keys.Down, delegate { this.Switch(Down); });
+            RegisterSwitchHotkey(Keys.Left, delegate { Switch(Left); });
+            RegisterSwitchHotkey(Keys.Right, delegate { Switch(Right); });
+            RegisterSwitchHotkey(Keys.Up, delegate { Switch(Up); });
+            RegisterSwitchHotkey(Keys.Down, delegate { Switch(Down); });
 
             RegisterMoveHotkey(Keys.Left, delegate { Move(Left); });
             RegisterMoveHotkey(Keys.Right, delegate { Move(Right); });
@@ -543,9 +543,9 @@ namespace VirtualDesktopGridSwitcher {
                 Keys keycode =
                     (Keys)Enum.Parse(typeof(Keys), (settings.FKeysForNumbers ? "F" : "D") + keyNumber.ToString());
                 
-                RegisterSwitchHotkey(keycode, delegate { this.Switch(desktopIndex); });
+                RegisterSwitchHotkey(keycode, delegate { Switch(desktopIndex); });
 
-                RegisterMoveHotkey(keycode, delegate { this.Move(desktopIndex); });
+                RegisterMoveHotkey(keycode, delegate { Move(desktopIndex); });
             }
 
             RegisterToggleStickyHotKey();
@@ -679,7 +679,7 @@ namespace VirtualDesktopGridSwitcher {
         public bool PreFilterMessage(ref Message message)
         {
             // Ignore unknown messages
-            if (message.Msg != this.commandWindowMessage)
+            if (message.Msg != commandWindowMessage)
             { return false; }
 
             int command = message.WParam.ToInt32();
