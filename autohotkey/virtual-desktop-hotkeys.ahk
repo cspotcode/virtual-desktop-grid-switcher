@@ -12,6 +12,8 @@ If !WinExist("ahk_exe " . exeName) {
     Run "../VirtualDesktopGridSwitcher.exe"
 }
 
+OnExit, % OnExitFn
+
 ; All commands
 GO_UP := 1
 GO_LEFT := 2
@@ -125,6 +127,10 @@ ToggleAlwaysOnTop(hwnd := "") {
     ;    message := "Always on Top Disabled"
     ;}
     ;TrayTip, , %message%, 1, 0x10
+}
+
+OnExitFn() {
+    ; TODO kill the .exe
 }
 
 }
