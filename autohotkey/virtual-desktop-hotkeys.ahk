@@ -21,7 +21,6 @@ MOVE_UP := 5
 MOVE_LEFT := 6
 MOVE_RIGHT := 7
 MOVE_DOWN := 8
-TOGGLE_ALWAYS_ON_TOP := 9
 TOGGLE_STICKY := 10
 DEBUG_SHOW_CURRENT_WINDOW_HWND := 11
 SET_HWND_MESSAGE_TARGET := 12
@@ -114,6 +113,20 @@ CheckHideOverlay() {
     if(ShouldHideOverlay() = 1) {
 	    HideOverlay()
 	}
+ToggleAlwaysOnTop(hwnd := "") {
+    if(hwnd == "") {
+        hwnd := WinExist("A")
+    }
+    WinSet, AlwaysOnTop, Toggle, ahk_id %hwnd%
+    ;WinGet, ExStyle, ExStyle, ahk_id %hwnd%
+    ;if(ExStyle & 0x8) {
+    ;    message := "Always on Top Enabled"
+    ;} else {
+    ;    message := "Always on Top Disabled"
+    ;}
+    ;TrayTip, , %message%, 1, 0x10
+}
+
 }
 
 ;;;;;;;
@@ -127,9 +140,9 @@ CheckHideOverlay() {
 #!Right::SendCommand(MOVE_RIGHT, 0)
 #!Down::SendCommand(MOVE_DOWN, 0)
 #!Up::SendCommand(MOVE_UP, 0)
-^#A::SendCommand(TOGGLE_ALWAYS_ON_TOP, 0)
 ^#S::SendCommand(TOGGLE_STICKY, 0)
 ^#D::SendCommand(DEBUG_SHOW_CURRENT_WINDOW_HWND, 0)
+^#A::ToggleAlwaysOnTop()
 ^#F::
     MouseGetPos,,,id
     MsgBox, %id%

@@ -364,13 +364,6 @@ namespace VirtualDesktopGridSwitcher {
             return WinAPI.GetWindowLongPtr(hWnd, WinAPI.GWL_EXSTYLE).AND(WinAPI.WS_EX_TOPMOST) == WinAPI.WS_EX_TOPMOST;
         }
 
-        private void ToggleWindowAlwaysOnTop(IntPtr hwnd) {
-            WinAPI.SetWindowPos(hwnd,
-              IsWindowTopMost(hwnd) ? WinAPI.HWND_NOTOPMOST : WinAPI.HWND_TOPMOST,
-              0, 0, 0, 0,
-              WinAPI.SWPFlags.SWP_SHOWWINDOW | WinAPI.SWPFlags.SWP_NOSIZE | WinAPI.SWPFlags.SWP_NOMOVE);
-        }
-
         private int _current;
         public int Current {
             get {
@@ -549,7 +542,6 @@ namespace VirtualDesktopGridSwitcher {
             }
 
             RegisterToggleStickyHotKey();
-            RegisterToggleAlwaysOnTopHotKey();
         }
 
         private void RegisterSwitchHotkey(Keys keycode, Action action) {
@@ -608,25 +600,6 @@ namespace VirtualDesktopGridSwitcher {
                 hotkeys.Add(hk);
             } else {
                 MessageBox.Show("Failed to register toggle sticky window hotkey for " + hk.KeyCode,
-                                "Warning",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Warning);
-            }
-        }
-
-        private void RegisterToggleAlwaysOnTopHotKey() {
-            Hotkey hk = new Hotkey() {
-                Control = settings.AlwaysOnTopHotkey.Modifiers.Ctrl,
-                Windows = settings.AlwaysOnTopHotkey.Modifiers.Win,
-                Alt = settings.AlwaysOnTopHotkey.Modifiers.Alt,
-                Shift = settings.AlwaysOnTopHotkey.Modifiers.Shift,
-                KeyCode = settings.AlwaysOnTopHotkey.Key
-            };
-            hk.Pressed += delegate { ToggleWindowAlwaysOnTop(WinAPI.GetForegroundWindow()); };
-            if (hk.Register(null)) {
-                hotkeys.Add(hk);
-            } else {
-                MessageBox.Show("Failed to register toggle window always on top hotkey for " + hk.KeyCode,
                                 "Warning",
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Warning);
@@ -710,9 +683,6 @@ namespace VirtualDesktopGridSwitcher {
                 case MOVE_DOWN:
                     Move(Down);
                     break;
-                case TOGGLE_ALWAYS_ON_TOP:
-                    ToggleWindowAlwaysOnTop(WinAPI.GetForegroundWindow());
-                    break;
                 case TOGGLE_STICKY:
                     ToggleWindowSticky(WinAPI.GetForegroundWindow());
                     break;
@@ -741,7 +711,6 @@ namespace VirtualDesktopGridSwitcher {
         const int MOVE_LEFT = 6;
         const int MOVE_RIGHT = 7;
         const int MOVE_DOWN = 8;
-        const int TOGGLE_ALWAYS_ON_TOP = 9;
         const int TOGGLE_STICKY = 10;
         const int DEBUG_SHOW_CURRENT_WINDOW_HWND = 11;
         const int SET_HWND_MESSAGE_TARGET = 12;
