@@ -369,60 +369,45 @@ namespace VirtualDesktopGridSwitcher {
             }
         }
 
-        public int Left {
-            get {
-                if (ColumnOf(Current - 1) < ColumnOf(Current)) {
-                    return Current - 1;
-                } else {
-                    if (settings.WrapAround) {
-                        return Current + settings.Columns - 1;
-                    } else {
-                        return Current;
-                    }
+        private int AdjacentDesktop(int start, int columnDelta, int rowDelta) {
+            int targetColumn = ColumnOf(start) + columnDelta;
+            int targetRow = RowOf(start) + rowDelta;
+            if (settings.WrapAround) {
+                if (targetColumn < 0) {
+                    targetColumn += settings.Columns;
+                }
+                if (targetColumn >= settings.Columns) {
+                    targetColumn -= settings.Columns;
+                }
+                if (targetRow < 0) {
+                    targetRow += settings.Rows;
+                }
+                if (targetRow >= settings.Rows) {
+                    targetRow -= settings.Rows;
                 }
             }
+            else {
+                if (targetColumn < 0 || targetColumn >= settings.Columns || targetRow < 0 || targetRow >= settings.Rows) {
+                    return start;
+                }
+            }
+            return targetRow * settings.Columns + targetColumn;
+        }
+
+        public int Left {
+            get { return AdjacentDesktop(Current, -1, 0); }
         }
 
         public int Right {
-            get {
-                if (ColumnOf(Current + 1) > ColumnOf(Current)) {
-                    return Current + 1;
-                } else {
-                    if (settings.WrapAround) {
-                        return Current - settings.Columns + 1;
-                    } else {
-                        return Current;
-                    }
-                }
-            }
+            get { return AdjacentDesktop(Current, 1, 0); }
         }
 
         public int Up {
-            get {
-                if (RowOf(Current - settings.Columns) < RowOf(Current)) {
-                    return Current - settings.Columns;
-                } else {
-                    if (settings.WrapAround) {
-                        return ((settings.Rows-1) * settings.Columns) + ColumnOf(Current);
-                    } else {
-                        return Current;
-                    }
-                }
-            }
+            get { return AdjacentDesktop(Current, 0, -1); }
         }
 
         public int Down {
-            get {
-                if (RowOf(Current + settings.Columns) > RowOf(Current)) {
-                    return Current + settings.Columns;
-                } else {
-                    if (settings.WrapAround) {
-                        return ColumnOf(Current);
-                    } else {
-                        return Current;
-                    }
-                }
-            }
+            get { return AdjacentDesktop(Current, 0, 1); }
         }
 
         private void SendSwitchedDesktopMessage() {
@@ -494,12 +479,18 @@ namespace VirtualDesktopGridSwitcher {
             });
         }
 
+        /// <summary>
+        /// Returns the column of a desktop (leftmost column = 0)
+        /// </summary>
         private int ColumnOf(int index) {
-            return ((index + settings.Columns) % settings.Columns);
+            return index % settings.Columns;
         }
 
+        /// <summary>
+        /// Returns the row of a desktop (top row = 0)
+        /// </summary>
         private int RowOf(int index) {
-            return ((index / settings.Columns) + settings.Rows) % settings.Rows;
+            return index / settings.Columns;
         }
 
         private HashSet<IntPtr> stickyWindows = new HashSet<IntPtr>();
