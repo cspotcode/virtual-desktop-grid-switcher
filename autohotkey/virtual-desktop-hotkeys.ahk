@@ -75,19 +75,19 @@ SendCommand(cmd, value := 0) {
 ReceiveMessage(cmd, value, msg, hwnd) {
     ; All variables are global unless declared to be local
     global
-	local num
-	if (cmd = SWITCHED_DESKTOP) {
-	    num := value + 1
-	    ShowOverlay("Desktop " + num, desktopName[value])
-	} else {
-	    MsgBox, %cmd%, %value%
-	}
+    local num
+    if (cmd = SWITCHED_DESKTOP) {
+        num := value + 1
+        ShowOverlay("Desktop " + num, desktopName[value])
+    } else {
+        MsgBox, %cmd%, %value%
+    }
 }
 
 HexToDec(hex) {
-	result := hex + 0
-	; result .= ""
-	return result
+    result := hex + 0
+    ; result .= ""
+    return result
 }
 
 ShowOverlay(title, message) {
@@ -95,12 +95,12 @@ ShowOverlay(title, message) {
     overlayVisible := 1
     SysGet, primary, MonitorPrimary
     SysGet, monitor, Monitor, %primary%
-	width := 200
-	height := 50
-	padding := 100
-	x := monitorLeft + ((monitorRight - monitorLeft) / 2) - (width / 2)
-	y := monitorBottom - height - padding
-    SplashImage, Icons/1.ico, BX%x%Y%y%W%width%H%height%, %message%, %title%, , 
+    width := 200
+    height := 50
+    padding := 100
+    x := monitorLeft + ((monitorRight - monitorLeft) / 2) - (width / 2)
+    y := monitorBottom - height - padding
+    SplashImage, Icons/1.ico, BX%x%Y%y%W%width%H%height%, %message%, %title%, ,
 }
 
 HideOverlay() {
