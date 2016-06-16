@@ -14,6 +14,8 @@ If !WinExist("ahk_exe " . exeName) {
 
 OnExit, % OnExitFn
 
+overlayVisible := 0
+
 ; All commands
 GO_UP := 1
 GO_LEFT := 2
@@ -89,6 +91,8 @@ HexToDec(hex) {
 }
 
 ShowOverlay(title, message) {
+    global overlayVisible
+    overlayVisible := 1
     SysGet, primary, MonitorPrimary
     SysGet, monitor, Monitor, %primary%
 	width := 200
@@ -100,21 +104,11 @@ ShowOverlay(title, message) {
 }
 
 HideOverlay() {
+    global overlayVisible
+    overlayVisible := 0
     SplashImage, Off
 }
 
-ShouldHideOverlay() {
-	if(GetKeyState("Ctrl", "P") = 0 && GetKeyState("LWin", "P") = 0) {
-	    return 1
-	} else {
-	    return 0
-	}
-}
-
-CheckHideOverlay() {
-    if(ShouldHideOverlay() = 1) {
-	    HideOverlay()
-	}
 ToggleAlwaysOnTop(hwnd := "") {
     if(hwnd == "") {
         hwnd := WinExist("A")
@@ -153,5 +147,8 @@ OnExitFn() {
     MouseGetPos,,,id
     MsgBox, %id%
 return
-~*Ctrl Up::CheckHideOverlay()
-~*LWin Up::CheckHideOverlay()
+#If overlayVisible
+; When either Ctrl or Win is released, the overlay is hidden.
+~*Ctrl Up::HideOverlay()
+~*LWin Up::HideOverlay()
+#If
