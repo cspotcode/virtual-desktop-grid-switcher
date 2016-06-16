@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using GlobalHotkeyWithDotNET;
 using VDMHelperCLR.Common;
 using VirtualDesktopGridSwitcher.Settings;
 using WindowsDesktop;
@@ -105,18 +104,11 @@ namespace VirtualDesktopGridSwitcher {
 
             settings.Apply += Restart;
 
-            try {
-                RegisterHotKeys();
-            } catch {
-                return false;
-            }
-
             return true;
         }
 
         private void Stop() {
             settings.Apply -= Restart;
-            UnregisterHotKeys();
             if (desktops != null) {
                 VirtualDesktop.CurrentChanged -= VirtualDesktop_CurrentChanged;
                 desktops = null;
@@ -510,111 +502,7 @@ namespace VirtualDesktopGridSwitcher {
             return ((index / settings.Columns) + settings.Rows) % settings.Rows;
         }
 
-        private List<Hotkey> hotkeys;
-
         private HashSet<IntPtr> stickyWindows = new HashSet<IntPtr>();
-
-        private void RegisterHotKeys() {
-
-            if(!settings.registerHotkeys)
-            { return; }
-            
-            hotkeys = new List<Hotkey>();
-
-            RegisterSwitchHotkey(Keys.Left, delegate { Switch(Left); });
-            RegisterSwitchHotkey(Keys.Right, delegate { Switch(Right); });
-            RegisterSwitchHotkey(Keys.Up, delegate { Switch(Up); });
-            RegisterSwitchHotkey(Keys.Down, delegate { Switch(Down); });
-
-            RegisterMoveHotkey(Keys.Left, delegate { Move(Left); });
-            RegisterMoveHotkey(Keys.Right, delegate { Move(Right); });
-            RegisterMoveHotkey(Keys.Up, delegate { Move(Up); });
-            RegisterMoveHotkey(Keys.Down, delegate { Move(Down); });
-
-            for (int keyNumber = 1; keyNumber <= Math.Min(DesktopCount, settings.FKeysForNumbers ?  12 : 9) ; ++keyNumber) {
-                var desktopIndex = keyNumber - 1;
-                Keys keycode =
-                    (Keys)Enum.Parse(typeof(Keys), (settings.FKeysForNumbers ? "F" : "D") + keyNumber.ToString());
-                
-                RegisterSwitchHotkey(keycode, delegate { Switch(desktopIndex); });
-
-                RegisterMoveHotkey(keycode, delegate { Move(desktopIndex); });
-            }
-
-            RegisterToggleStickyHotKey();
-        }
-
-        private void RegisterSwitchHotkey(Keys keycode, Action action) {
-            Hotkey hk = new Hotkey() {
-                Control = settings.SwitchModifiers.Ctrl,
-                Windows = settings.SwitchModifiers.Win,
-                Alt = settings.SwitchModifiers.Alt,
-                Shift = settings.SwitchModifiers.Shift,
-                KeyCode = keycode
-            };
-            hk.Pressed += delegate { action(); };
-            if (hk.Register(null)) {
-                hotkeys.Add(hk);
-            } else {
-                MessageBox.Show("Failed to register switch hotkey for " + hk.KeyCode,
-                                "Warning",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Warning);
-            }
-        }
-
-        private void RegisterMoveHotkey(Keys keycode, Action action)
-        {
-            Hotkey hk = new Hotkey()
-            {
-                Control = settings.MoveModifiers.Ctrl,
-                Windows = settings.MoveModifiers.Win,
-                Alt = settings.MoveModifiers.Alt,
-                Shift = settings.MoveModifiers.Shift,
-                KeyCode = keycode
-            };
-            hk.Pressed += delegate { action(); };
-            if (hk.Register(null))
-            {
-                hotkeys.Add(hk);
-            }
-            else
-            {
-                MessageBox.Show("Failed to register move window hotkey for " + hk.KeyCode,
-                                "Warning",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Warning);
-            }
-        }
-
-        private void RegisterToggleStickyHotKey() {
-            Hotkey hk = new Hotkey() {
-                Control = settings.StickyWindowHotKey.Modifiers.Ctrl,
-                Windows = settings.StickyWindowHotKey.Modifiers.Win,
-                Alt = settings.StickyWindowHotKey.Modifiers.Alt,
-                Shift = settings.StickyWindowHotKey.Modifiers.Shift,
-                KeyCode = settings.StickyWindowHotKey.Key
-            };
-            hk.Pressed += delegate { ToggleWindowSticky(WinAPI.GetForegroundWindow()); };
-            if (hk.Register(null)) {
-                hotkeys.Add(hk);
-            } else {
-                MessageBox.Show("Failed to register toggle sticky window hotkey for " + hk.KeyCode,
-                                "Warning",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Warning);
-            }
-        }
-
-        private void UnregisterHotKeys()
-        {
-            if (hotkeys != null)
-            {
-                hotkeys.ForEach(hk => hk.Unregister());
-                hotkeys = null;
-            }
-        }
-
 
         private void ReleaseModifierKeys() {
             const int WM_KEYUP = 0x101;

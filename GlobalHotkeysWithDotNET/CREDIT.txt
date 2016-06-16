@@ -1,5 +1,0 @@
-Global Hotkeys With .NET
-------------------------
-Modified From Public Domain Code found at
-https://bloggablea.wordpress.com/2007/05/01/global-hotkeys-with-net/
-by Max Bolingbroke
