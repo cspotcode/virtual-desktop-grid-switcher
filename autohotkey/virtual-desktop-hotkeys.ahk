@@ -150,7 +150,7 @@ ReceiveMessage(cmd, value, msg, hwnd) {
     local num
     if (cmd = SWITCHED_DESKTOP) {
         num := value + 1
-        ShowOverlay("Desktop " + num, desktopName[value])
+        ShowOverlay("Desktop " + num, desktopName[value], "../Icons/" . num . ".ico")
     } else {
         MsgBox, % cmd, % value
     }
@@ -162,7 +162,7 @@ HexToDec(hex) {
     return result
 }
 
-ShowOverlay(title, message) {
+ShowOverlay(title, message, icon := "") {
     global overlayVisible, overlayEnabled
     if(!overlayEnabled) {
         return
@@ -171,11 +171,14 @@ ShowOverlay(title, message) {
     SysGet, primary, MonitorPrimary
     SysGet, monitor, Monitor, % primary
     width := 200
-    height := 50
+    height := 120
     padding := 100
     x := monitorLeft + ((monitorRight - monitorLeft) / 2) - (width / 2)
     y := monitorBottom - height - padding
-    SplashImage, Icons/1.ico, BX%x%Y%y%W%width%H%height%, % message, % title, ,
+    iconSize := 64
+    textColor := "303030"
+    windowColor := "FFFFFF"
+    SplashImage, % icon, B1 X%x% Y%y% W%width% H%height% ZH%iconSize% ZW%iconSize% CW%windowColor% CT%textColor%, % message, % title, ,
 }
 
 HideOverlay() {
