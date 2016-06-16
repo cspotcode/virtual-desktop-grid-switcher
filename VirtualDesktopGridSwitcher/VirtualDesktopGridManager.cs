@@ -723,6 +723,9 @@ namespace VirtualDesktopGridSwitcher {
                 case SET_HWND_MESSAGE_TARGET:
                     hwndMessageTarget = message.LParam;
                     break;
+                case QUIT:
+                    Application.Exit();
+                    break;
                 default:
                     // Do nothing
                     break;
@@ -743,5 +746,6 @@ namespace VirtualDesktopGridSwitcher {
         const int DEBUG_SHOW_CURRENT_WINDOW_HWND = 11;
         const int SET_HWND_MESSAGE_TARGET = 12;
         const int SWITCHED_DESKTOP = 13;
+        const int QUIT = 14;
     }
 }

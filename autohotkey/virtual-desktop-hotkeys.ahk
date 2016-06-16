@@ -26,6 +26,7 @@ TOGGLE_STICKY := 10
 DEBUG_SHOW_CURRENT_WINDOW_HWND := 11
 SET_HWND_MESSAGE_TARGET := 12
 SWITCHED_DESKTOP := 13
+QUIT := 14
 
 OnMessage(MsgNum, "ReceiveMessage")
 myHwnd := HexToDec(A_ScriptHwnd)
