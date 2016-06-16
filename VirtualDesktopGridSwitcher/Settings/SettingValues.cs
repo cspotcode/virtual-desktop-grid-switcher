@@ -11,18 +11,6 @@ namespace VirtualDesktopGridSwitcher.Settings {
 
     public class SettingValues {
 
-        public class Modifiers {
-            public bool Ctrl;
-            public bool Win;
-            public bool Alt;
-            public bool Shift;
-        }
-
-        public class Hotkey {
-            public Keys Key;
-            public Modifiers Modifiers;
-        }
-
         public class BrowserInfo {
             public string ProgID;
             public string ExeName;
@@ -33,37 +21,6 @@ namespace VirtualDesktopGridSwitcher.Settings {
         public int Rows = 3;
 
         public bool WrapAround = false;
-
-        public bool registerHotkeys = true;
-
-        public Modifiers SwitchModifiers = 
-            new Modifiers {
-                Ctrl = true, Win = false, Alt = true, Shift = false
-            };
-
-        
-        public Modifiers MoveModifiers =
-            new Modifiers {
-                Ctrl = true, Win = false, Alt = true, Shift = true
-            };
-        
-        public bool FKeysForNumbers = false;
-
-        public Hotkey AlwaysOnTopHotkey =
-            new Hotkey {
-                Key = Keys.Space,
-                Modifiers = new Modifiers {
-                    Ctrl = true, Win = false, Alt = true, Shift = false
-                }
-            };
-
-        public Hotkey StickyWindowHotKey =
-            new Hotkey {
-                Key = Keys.Space,
-                Modifiers = new Modifiers {
-                    Ctrl = true, Win = false, Alt = true, Shift = true
-                }
-            };
 
         public bool ActivateWebBrowserOnSwitch = true;
 
@@ -125,40 +82,6 @@ namespace VirtualDesktopGridSwitcher.Settings {
         private static void LoadOldSettings(SettingValues settings) {
             // Backward compatibility
             XDocument xdoc = XDocument.Load(SettingsFileName);
-
-            var switchCtrl = xdoc.Element("SettingValues").Element("CtrlModifierSwitch");
-            if (switchCtrl != null) {
-                settings.SwitchModifiers.Ctrl = (bool)switchCtrl;
-            }
-            var switchWin = xdoc.Element("SettingValues").Element("WinModifierSwitch");
-            if (switchWin != null) {
-                settings.SwitchModifiers.Win = (bool)switchWin;
-            }
-            var switchAlt = xdoc.Element("SettingValues").Element("AltModifierSwitch");
-            if (switchAlt != null) {
-                settings.SwitchModifiers.Alt = (bool)switchAlt;
-            }
-            var switchShift = xdoc.Element("SettingValues").Element("ShiftModifierSwitch");
-            if (switchShift != null) {
-                settings.SwitchModifiers.Shift = (bool)switchShift;
-            }
-
-            var moveCtrl = xdoc.Element("SettingValues").Element("CtrlModifierMove");
-            if (moveCtrl != null) {
-                settings.MoveModifiers.Ctrl = (bool)moveCtrl;
-            }
-            var moveWin = xdoc.Element("SettingValues").Element("WinModifierMove");
-            if (moveWin != null) {
-                settings.MoveModifiers.Win = (bool)moveWin;
-            }
-            var moveAlt = xdoc.Element("SettingValues").Element("AltModifierMove");
-            if (moveAlt != null) {
-                settings.MoveModifiers.Alt = (bool)moveAlt;
-            }
-            var moveShift = xdoc.Element("SettingValues").Element("ShiftModifierMove");
-            if (moveShift != null) {
-                settings.MoveModifiers.Shift = (bool)moveShift;
-            }
         }
 
         public bool Save() {
