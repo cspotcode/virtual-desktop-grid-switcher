@@ -63,7 +63,7 @@ GetTargetHwnd() {
 }
 
 ; Send a command to VirtualDesktopGridSwitcher
-SendCommand(cmd, value) {
+SendCommand(cmd, value := 0) {
     ; All variables are global unless declared to be local
     global
     local id
@@ -132,17 +132,17 @@ OnExitFn() {
 ;;;;;;;
 ; Hotkeys.  Customize these to your liking.
 
-^#Left::SendCommand(GO_LEFT, 0)
-^#Right::SendCommand(GO_RIGHT, 0)
-^#Down::SendCommand(GO_DOWN, 0)
-^#Up::SendCommand(GO_UP, 0)
-#!Left::SendCommand(MOVE_LEFT, 0)
-#!Right::SendCommand(MOVE_RIGHT, 0)
-#!Down::SendCommand(MOVE_DOWN, 0)
-#!Up::SendCommand(MOVE_UP, 0)
-^#S::SendCommand(TOGGLE_STICKY, 0)
-^#D::SendCommand(DEBUG_SHOW_CURRENT_WINDOW_HWND, 0)
+^#Left::SendCommand(GO_LEFT)
+^#Right::SendCommand(GO_RIGHT)
+^#Down::SendCommand(GO_DOWN)
+^#Up::SendCommand(GO_UP)
+#!Left::SendCommand(MOVE_LEFT)
+#!Right::SendCommand(MOVE_RIGHT)
+#!Down::SendCommand(MOVE_DOWN)
+#!Up::SendCommand(MOVE_UP)
 ^#A::ToggleAlwaysOnTop()
+^#S::SendCommand(TOGGLE_STICKY)
+^#D::SendCommand(DEBUG_SHOW_CURRENT_WINDOW_HWND)
 ^#F::
     MouseGetPos,,,id
     MsgBox, %id%
