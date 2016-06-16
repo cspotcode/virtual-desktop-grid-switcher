@@ -595,5 +595,7 @@ namespace VirtualDesktopGridSwitcher {
         const int SET_HWND_MESSAGE_TARGET = 12;
         const int SWITCHED_DESKTOP = 13;
         const int QUIT = 14;
+        const int GO_TO = 15;
+        const int MOVE_ACTIVE_TO = 16;
     }
 }
