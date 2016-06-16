@@ -156,6 +156,8 @@ namespace VirtualDesktopGridSwitcher {
                 }
 
                 movingWindow = IntPtr.Zero;
+
+                SendSwitchedDesktopMessage();
             }
         }
 
@@ -422,7 +424,6 @@ namespace VirtualDesktopGridSwitcher {
             MoveStickyWindows(index);
 
             Current = index;
-            SendSwitchedDesktopMessage();
         }
 
         /// <summary>
@@ -458,7 +459,6 @@ namespace VirtualDesktopGridSwitcher {
                 activeWindows[index] = hwnd;
                 WinAPI.SetForegroundWindow(hwnd);
                 Current = index;
-                SendSwitchedDesktopMessage();
             }
         }
 
