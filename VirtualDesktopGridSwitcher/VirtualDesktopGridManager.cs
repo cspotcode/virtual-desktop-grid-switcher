@@ -426,8 +426,10 @@ namespace VirtualDesktopGridSwitcher {
             SendSwitchedDesktopMessage();
         }
 
-        public void Move(int index) {
-            var hwnd = WinAPI.GetForegroundWindow();
+        /// <summary>
+        /// Move a window to a desktop and switch to that desktop
+        /// </summary>
+        public void Move(IntPtr hwnd, int index) {
             if (hwnd != IntPtr.Zero) {
                 if (IsWindowDefaultBrowser(hwnd, settings.GetBrowserToActivateInfo())) {
                     for (int i = 0; i < lastActiveBrowserWindows.Length; ++i) {
@@ -439,6 +441,14 @@ namespace VirtualDesktopGridSwitcher {
                 }
             }
             MoveWindowAndSwitchDesktop(hwnd, index);
+        }
+
+        /// <summary>
+        /// Move the foreground window to a desktop and switch to that desktop
+        /// </summary>
+        public void MoveForeground(int index) {
+            var hwnd = WinAPI.GetForegroundWindow();
+            Move(hwnd, index);
         }
 
         private void MoveWindowAndSwitchDesktop(IntPtr hwnd, int index) {
@@ -550,17 +560,23 @@ namespace VirtualDesktopGridSwitcher {
                 case GO_DOWN:
                     Switch(Down);
                     break;
+                case GO_TO:
+                    Switch(value);
+                    break;
                 case MOVE_UP:
-                    Move(Up);
+                    MoveForeground(Up);
                     break;
                 case MOVE_LEFT:
-                    Move(Left);
+                    MoveForeground(Left);
                     break;
                 case MOVE_RIGHT:
-                    Move(Right);
+                    MoveForeground(Right);
                     break;
                 case MOVE_DOWN:
-                    Move(Down);
+                    MoveForeground(Down);
+                    break;
+                case MOVE_TO:
+                    MoveForeground(value);
                     break;
                 case TOGGLE_STICKY:
                     ToggleWindowSticky(WinAPI.GetForegroundWindow());
@@ -596,6 +612,6 @@ namespace VirtualDesktopGridSwitcher {
         const int SWITCHED_DESKTOP = 13;
         const int QUIT = 14;
         const int GO_TO = 15;
-        const int MOVE_ACTIVE_TO = 16;
+        const int MOVE_TO = 16;
     }
 }

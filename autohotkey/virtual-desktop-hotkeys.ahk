@@ -45,18 +45,18 @@ DesktopNames() {
 ^#F10::SendCommand(GO_TO, 9)
 ^#F11::SendCommand(GO_TO, 10)
 ^#F12::SendCommand(GO_TO, 11)
-#!F1::SendCommand(MOVE_ACTIVE_TO, 0)
-#!F2::SendCommand(MOVE_ACTIVE_TO, 1)
-#!F3::SendCommand(MOVE_ACTIVE_TO, 2)
-#!F4::SendCommand(MOVE_ACTIVE_TO, 3)
-#!F5::SendCommand(MOVE_ACTIVE_TO, 4)
-#!F6::SendCommand(MOVE_ACTIVE_TO, 5)
-#!F7::SendCommand(MOVE_ACTIVE_TO, 6)
-#!F8::SendCommand(MOVE_ACTIVE_TO, 7)
-#!F9::SendCommand(MOVE_ACTIVE_TO, 8)
-#!F10::SendCommand(MOVE_ACTIVE_TO, 9)
-#!F11::SendCommand(MOVE_ACTIVE_TO, 10)
-#!F12::SendCommand(MOVE_ACTIVE_TO, 11)
+#!F1::SendCommand(MOVE_TO, 0)
+#!F2::SendCommand(MOVE_TO, 1)
+#!F3::SendCommand(MOVE_TO, 2)
+#!F4::SendCommand(MOVE_TO, 3)
+#!F5::SendCommand(MOVE_TO, 4)
+#!F6::SendCommand(MOVE_TO, 5)
+#!F7::SendCommand(MOVE_TO, 6)
+#!F8::SendCommand(MOVE_TO, 7)
+#!F9::SendCommand(MOVE_TO, 8)
+#!F10::SendCommand(MOVE_TO, 9)
+#!F11::SendCommand(MOVE_TO, 10)
+#!F12::SendCommand(MOVE_TO, 11)
 ^#A::ToggleAlwaysOnTop()
 ^#S::SendCommand(TOGGLE_STICKY)
 ^#D::SendCommand(DEBUG_SHOW_CURRENT_WINDOW_HWND)
@@ -110,7 +110,7 @@ CommandConstants() {
     SWITCHED_DESKTOP := 13
     QUIT := 14
     GO_TO := 15
-    MOVE_ACTIVE_TO := 16
+    MOVE_TO := 16
 }
 
 ; Return an HWND that will receive our commands.
