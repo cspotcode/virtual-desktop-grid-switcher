@@ -140,6 +140,8 @@ namespace VirtualDesktopGridSwitcher {
                 _current = newDesktop;
                 sysTrayProcess.ShowIconForDesktop(Current);
 
+                MoveStickyWindows(_current);
+
                 var fgHwnd = WinAPI.GetForegroundWindow();
                 var lastActiveWindow = activeWindows[Current];
 
@@ -421,8 +423,6 @@ namespace VirtualDesktopGridSwitcher {
             activeWindows[Current] = WinAPI.GetForegroundWindow();
             Debug.WriteLine("Switch Active " + Current + " " + activeWindows[Current]);
 
-            MoveStickyWindows(index);
-
             Current = index;
         }
 
@@ -453,7 +453,6 @@ namespace VirtualDesktopGridSwitcher {
 
         private void MoveWindowAndSwitchDesktop(IntPtr hwnd, int index) {
             if (hwnd != IntPtr.Zero) {
-                MoveStickyWindows(index);
                 MoveWindow(hwnd, index);
 
                 activeWindows[index] = hwnd;
