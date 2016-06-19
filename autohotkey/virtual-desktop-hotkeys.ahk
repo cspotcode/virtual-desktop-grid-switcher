@@ -95,7 +95,7 @@ Initialize() {
     }
 
     ; Run function when this script is exited
-    OnExit, % OnExitFn
+    OnExit("OnExitFn")
 
     overlayVisible := 0
 
@@ -208,6 +208,11 @@ ToggleAlwaysOnTop(hwnd := "") {
     ;TrayTip, , %message%, 1, 0x10
 }
 
-OnExitFn() {
-    ; TODO kill the .exe
+OnExitFn(reason, exitCode) {
+    global
+    ; Kill the Exe.  Expectation is that this .ahk script will manage the exe's
+    ; lifetime, both starting and stopping it.
+    If(reason != "Reload" && reason != "Single") {
+        SendCommand(QUIT)
+    }
 }
