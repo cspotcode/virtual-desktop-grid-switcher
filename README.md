@@ -16,8 +16,6 @@ The included AutoHotKey script is configured with the following hotkeys.  They c
 * Ctrl+Win+A: Toggle always-on-top for active window
 * Ctrl+Win+S: Toggle sticky for active window
 
-*Hotkeys for switching to a specific desktop aren't supported at the moment.  If you want that feature, send me a message.*
-
 *Original readme is below:*
 
 =============
