@@ -1,1 +1,4 @@
 *   text=auto
+
+# VS requires sln files to have crlf line endings
+*.sln text eol=crlf
