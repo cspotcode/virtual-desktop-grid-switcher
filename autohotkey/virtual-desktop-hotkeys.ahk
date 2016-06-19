@@ -81,10 +81,12 @@ Initialize() {
     MsgNum := DllCall("RegisterWindowMessage", Str, "VIRTUALDESKTOPGRIDSWITCHER_COMMAND")
 
     exeName := "VirtualDesktopGridSwitcher.exe"
+    ; Use this when running via Visual Studio's debugger
+    ;exeName := "VirtualDesktopGridSwitcher.vshost.exe"
 
     ; Launch VirtualDesktopGridManager if it's not already running.
     DetectHiddenWindows, On
-    If !WinExist("ahk_exe " . exeName) {
+    If(!WinExist("ahk_exe " . exeName)) {
         Run "../VirtualDesktopGridSwitcher.exe"
     }
 
@@ -128,7 +130,7 @@ GetTargetHwnd() {
         id := a%A_Index%
         WinGetClass, cls, ahk_id %id%
         ; Skip the "GDI+" window
-        If(RegExMatch(cls, "^GDI") = 0) {
+        If(RegExMatch(cls, "^GDI") == 0) {
             return id
         }
     }
@@ -144,15 +146,15 @@ SendCommand(cmd, value := 0) {
 }
 
 ; Called when VirtualDesktopGridSwitcher sends us a message
-ReceiveMessage(cmd, value, msg, hwnd) {
+ReceiveMessage(command, value, msg, hwnd) {
     ; All variables are global unless declared to be local
     global
     local num
-    if (cmd = SWITCHED_DESKTOP) {
+    if (command == SWITCHED_DESKTOP) {
         num := value + 1
         ShowOverlay("Desktop " + num, desktopName[value], "../Icons/" . num . ".ico")
     } else {
-        MsgBox, % cmd, % value
+        MsgBox, % command, % value
     }
 }
 
