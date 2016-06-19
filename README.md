@@ -11,6 +11,8 @@ The included AutoHotKey script is configured with the following hotkeys.  They c
 
 * Ctrl+Win+&lt;arrow key>: Switch desktop
 * Win+Alt+&lt;arrow key>: Move active window and switch desktop
+* Ctrl+Win+&lt;F1-F12>: Jump to a specific desktop by number
+* Win+Alt+&lt;F1-F12>: Move active window and jump to a specific desktop by number
 * Ctrl+Win+A: Toggle always-on-top for active window
 * Ctrl+Win+S: Toggle sticky for active window
 
