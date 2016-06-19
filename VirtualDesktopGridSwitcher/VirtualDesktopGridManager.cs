@@ -527,7 +527,9 @@ namespace VirtualDesktopGridSwitcher {
                     Switch(Down);
                     break;
                 case GO_TO:
-                    Switch(value);
+                    if (value >= 0 && value < DesktopCount) {
+                        Switch(value);
+                    }
                     break;
                 case MOVE_UP:
                     MoveForeground(Up);
@@ -542,7 +544,9 @@ namespace VirtualDesktopGridSwitcher {
                     MoveForeground(Down);
                     break;
                 case MOVE_TO:
-                    MoveForeground(value);
+                    if (value >= 0 && value < DesktopCount) {
+                        MoveForeground(value);
+                    }
                     break;
                 case TOGGLE_STICKY:
                     ToggleWindowSticky(WinAPI.GetForegroundWindow());
