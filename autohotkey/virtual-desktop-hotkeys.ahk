@@ -25,6 +25,7 @@ DesktopNames() {
 Options() {
     global
     overlayEnabled := 1 ; 1 = enabled, 0 = disabled
+    hideOverlayDelay := 1000 ; milliseconds for overlay to remain visible before auto-hiding
 }
 
 ;;;;;;;
@@ -165,7 +166,7 @@ HexToDec(hex) {
 }
 
 ShowOverlay(title, message, icon := "") {
-    global overlayVisible, overlayEnabled
+    global overlayVisible, overlayEnabled, hideOverlayDelay
     if(!overlayEnabled) {
         return
     }
@@ -181,6 +182,7 @@ ShowOverlay(title, message, icon := "") {
     textColor := "303030"
     windowColor := "FFFFFF"
     SplashImage, % icon, B1 X%x% Y%y% W%width% H%height% ZH%iconSize% ZW%iconSize% CW%windowColor% CT%textColor%, % message, % title, ,
+    SetTimer, HideOverlay, % -hideOverlayDelay
 }
 
 HideOverlay() {
