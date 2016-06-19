@@ -88,7 +88,7 @@ Initialize() {
     ; Launch VirtualDesktopGridManager if it's not already running.
     DetectHiddenWindows, On
     If(!WinExist("ahk_exe " . exeName)) {
-        Run "../VirtualDesktopGridSwitcher.exe"
+        Run "../VirtualDesktopGridSwitcher.exe", ../
         While(GetTargetHwnd() == "") {
             Sleep, 50
         }
