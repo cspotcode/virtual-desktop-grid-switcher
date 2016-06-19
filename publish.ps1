@@ -35,7 +35,7 @@ cp CREDITS.txt "$out/"
 
 Add-Type -assembly "system.io.compression.filesystem"
 $dirname = (Resolve-Path "./").ToString()
-$source = $dirname + "/publish"
+$source = $dirname + "/$out"
 $destination = $dirname + "/VirtualDesktopGridSwitcher-v" + $version + ".zip"
 if(Test-Path $destination) {
     rm $destination
