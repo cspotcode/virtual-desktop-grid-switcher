@@ -89,6 +89,9 @@ Initialize() {
     DetectHiddenWindows, On
     If(!WinExist("ahk_exe " . exeName)) {
         Run "../VirtualDesktopGridSwitcher.exe"
+        While(GetTargetHwnd() == "") {
+            Sleep, 50
+        }
     }
 
     ; Run function when this script is exited
